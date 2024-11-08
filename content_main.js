@@ -45,6 +45,9 @@
 
             overridePokemonPool(data.meta.name, allowedMons);
 
+            // research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
+            if(app.rooms.teambuilder?.curChartType === "pokemon") app.rooms.teambuilder.updateChart(true);
+
         }
         else if(data.action === "setPower" && typeof data.value === "boolean") {
 
