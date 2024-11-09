@@ -114,10 +114,11 @@ function interpretName(name) {
         return months[vanilla[2]] + " " + vanilla[1] + ( vanilla[3] ? " " + vanilla[3] : "" );
     }
 
-    const perfect = /./.exec(name);
-    if(perfect) {}
+    const perfect = /^([A-Z]+)([0-9]+)$/.exec(name);
+    if(perfect) {
+        return "Vision " + perfect[1] + ", Version " + perfect[2];
+    }
 
-    return name;
     throw new Error("35Pokes Background: Failed to interpret meta name " + name);
 }
 
