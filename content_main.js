@@ -108,9 +108,13 @@
     // target: number (target generation to mimic)
     function overrideMoveData(target) {
         const gens = [];
-        const targetRegex = new RegExp("^gen[" + target + "-9]+$");
+        const filter = /^gen(\d+)$/;
         const markedMoves = new Set();
-        for(const gen in BattleTeambuilderTable) if(targetRegex.test(gen)) gens.push(gen);
+        for(const gen in BattleTeambuilderTable) {
+            const result = filter.exec(gen);
+            if(result && Number(result[1]) >= Number(target))
+                gens.push(gen);
+        }
         gens.sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
         while(gens.length) {
             const gen = gens.pop();
