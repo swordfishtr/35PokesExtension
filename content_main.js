@@ -43,7 +43,8 @@
 
             }
 
-            overridePokemonPool(data.meta.name, allowedMons);
+            const TEMP_NAME = (data.meta.group ? data.meta.group + " " : "") + data.meta.name;
+            overridePokemonPool(TEMP_NAME, allowedMons);
 
             // research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
             if(app.rooms.teambuilder?.curChartType === "pokemon") app.rooms.teambuilder.updateChart(true);
@@ -93,14 +94,14 @@
         }
     }
 
+    // Allowed mons are added to the bottom of the natdex, after lc.
+    // The original entries for these mons remain in place. The teambuilder allows duplicates.
+    // This is the least destructive approach possible.
     function overridePokemonPool(name, meta) {
-
-        const TEMPARR = meta.map((mon) => ["pokemon", mon]);
-        TEMPARR.unshift(["header", "35 Pokes: " + name]);
-        //TEMPARR.unshift(["header", '<button class="button" style="height: 24px; margin-right: 12px;">Challenge Code</button> 35 Pokes']);
-
-        BattleTeambuilderTable.gen9natdex.tierSet = TEMPARR;
-        BattleTeambuilderTable.gen9natdex.formatSlices.AG = 0;
+        const TEMP_ARR = meta.map((mon) => ["pokemon", mon]);
+        TEMP_ARR.unshift(["header", "35 Pokes: " + name]);
+        BattleTeambuilderTable.gen9natdex.formatSlices.AG = BattleTeambuilderTable.gen9natdex.tiers.length;
+        BattleTeambuilderTable.gen9natdex.tiers.push(...TEMP_ARR);
     }
 
     // NOTE: Moves (and most other things) changed between generations are calculated backwards in Showdown.
