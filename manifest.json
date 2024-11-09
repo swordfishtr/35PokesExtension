@@ -9,6 +9,9 @@
         "48": "35_logo.PNG",
         "128": "35_logo.PNG"
     },
+    "action": {
+        "default_popup": "popup.html"
+    },
     "background": {
         "service_worker": "background.js",
         "scripts": ["background.js"]
