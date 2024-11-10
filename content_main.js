@@ -10,7 +10,10 @@
     }
     else console.log("35Pokes Main: Unexpected init.");
 
-    const DEFAULT_BPS = BattleTeambuilderTable.gen9natdex.tierSet;
+    const DEFAULT_TIERS = _.clone(BattleTeambuilderTable.gen9natdex.tierSet);
+    const DEFAULT_LEARNSETS = _.clone(BattleTeambuilderTable.learnsets);
+    const DEFAULT_POKEDEX = _.clone(BattlePokedex);
+    const DEFAULT_MOVEDEX = _.clone(BattleMovedex);
 
     // THIS IS NOT A SECURE CHANNEL
     // Pokemon Showdown isn't a hostile website, but other extensions
@@ -61,8 +64,11 @@
     });
 
     function restoreDefaults() {
-        BattleTeambuilderTable.gen9natdex.tierSet = DEFAULT_BPS;
+        BattleTeambuilderTable.gen9natdex.tierSet = _.clone(DEFAULT_TIERS);
         BattleTeambuilderTable.gen9natdex.tiers = null;
+        BattleTeambuilderTable.learnsets = _.clone(DEFAULT_LEARNSETS);
+        BattlePokedex = _.clone(DEFAULT_POKEDEX);
+        BattleMovedex = _.clone(DEFAULT_MOVEDEX);
     }
 
     function overrideAbilities(mon, abil1, abil2, abil3, abil4) {
@@ -100,8 +106,8 @@
     function overridePokemonPool(name, meta) {
         const TEMP_ARR = meta.map((mon) => ["pokemon", mon]);
         TEMP_ARR.unshift(["header", "35 Pokes: " + name]);
-        BattleTeambuilderTable.gen9natdex.formatSlices.AG = BattleTeambuilderTable.gen9natdex.tiers.length;
-        BattleTeambuilderTable.gen9natdex.tiers.push(...TEMP_ARR);
+        BattleTeambuilderTable.gen9natdex.formatSlices.AG = BattleTeambuilderTable.gen9natdex.tierSet.length;
+        BattleTeambuilderTable.gen9natdex.tierSet.push(...TEMP_ARR);
     }
 
     // NOTE: Moves (and most other things) changed between generations are calculated backwards in Showdown.
@@ -149,7 +155,8 @@
         }
         
         // things break from unexpected values, the best indication we can do is add "!!!" to shortDesc
-        markedMoves.forEach((move) => BattleMovedex[move].shortDesc = BattleMovedex[move].shortDesc ? "!!! " + BattleMovedex[move].shortDesc : "!!!" );
+        //markedMoves.forEach((move) => BattleMovedex[move].shortDesc = BattleMovedex[move].shortDesc ? "!!! " + BattleMovedex[move].shortDesc : "!!!" );
+        markedMoves.forEach((move) => { if(BattleMovedex[move].shortDesc) BattleMovedex[move].shortDesc = "!!! " + BattleMovedex[move].shortDesc });
 
         if(target <= 3) {
             const oldgenSpecialMoves = new Set(["Dark", "Dragon", "Electric", "Fire", "Grass", "Ice", "Psychic", "Water"]);
