@@ -8,10 +8,10 @@ const KEY_TIMESTAMP = "timestamp";
 
 var STATE_DOWNLOADING = false;
 
-/* browser.storage.local.get(null).then((stored) => {
-    for(const x of stored) if(x) return;
+browser.storage.local.get(null).then((stored) => {
+    for(const x in stored) if(x) return;
     checkUpdates();
-}); */
+});
 
 browser.runtime.onMessage.addListener((msg) => {
     if(msg === MSG_REFRESH) checkUpdates();
@@ -60,7 +60,7 @@ async function interpretIndex(index) {
     // Download and process base metagames in parallel
     await Promise.all(index.map(async (meta) => {
         if(meta.type !== "blob") return;
-        if(meta.path === "LICENSE" || meta.path === "test.txt") return;
+        if(meta.path === "LICENSE") return;
 
         //// Group and Name
 
@@ -88,8 +88,10 @@ async function interpretIndex(index) {
 
         buffer.rules = data_meta.rules;
 
-        // This format is relative, thus can't be interpreted in parallel.
-        if(data_meta.rules?.relative) {
+        // This format is relative, thus can't be interpreted in parallel. TODO: change `relative` to `parent`
+        if(data_meta.rules?.parent) {
+            buffer.add = data_meta.add;
+            buffer.ban = data_meta.ban;
             metagamesRelative[meta.path] = buffer;
             return;
         }
@@ -99,8 +101,29 @@ async function interpretIndex(index) {
         metagames[meta.path] = buffer;
     }));
 
-    // Download and process relative metagames in a proper order
-    console.log(metagamesRelative);
+    // Determine height of each relative meta.
+    Object.values(metagamesRelative).forEach((meta) => {
+        traverseMetagames(metagames, metagamesRelative, meta);
+    });
+
+    // Interpret relative metas in the order of lowest to greatest height.
+    // This ensures that every meta's parent is already interpreted by the time it's its turn.
+    Object.entries(metagamesRelative).sort((a, b) => a[1].rules.height - b[1].rules.height).forEach((meta) => {
+        // should trigger format type 1 or 2
+        interpretPokemon(meta[1], meta[1].add);
+
+        // current format of stored metas does not support multiples of the same pokemon, though the teambuilder
+        // does have limited support for it - a pokemon can't have a different set of abilities or moves for each of its entries.
+        for(const mon in metagames[meta[1].rules.parent].meta) {
+            if(!meta[1].meta[mon] && !meta[1].ban.includes(mon))
+                meta[1].meta[mon] = metagames[meta[1].rules.parent].meta[mon];
+        }
+
+        delete meta[1].add;
+        delete meta[1].ban;
+        delete meta[1].rules.height;
+        metagames[meta[0]] = meta[1];
+    });
 
     return metagames;
 }
@@ -158,4 +181,26 @@ function interpretPokemon(buffer, mons) {
         buffer.meta = mons.meta;
     }
 
+}
+
+function traverseMetagames(metagames, metagamesRelative, self) {
+    if(self.rules.height === 0) {
+        throw new Error("35Pokes Background: Circular metagame hierarchy: " + self.name);
+    }
+    if(self.rules.height) {
+        // We have already traversed this part of the branch up to the root. No need to repeat.
+        return self.rules.height;
+    }
+    if(metagames[self.rules.parent]) {
+        self.rules.height = 1;
+        return 1;
+    }
+    if(metagamesRelative[self.rules.parent]) {
+        // This order is important for detecting circular dependencies.
+        self.rules.height = 0;
+        self.rules.height += traverseMetagames(metagames, metagamesRelative, metagamesRelative[self.rules.parent]);
+        self.rules.height++;
+        return self.rules.height;
+    }
+    throw new Error("35Pokes Background: Could not find parent metagame of " + self.name);
 }

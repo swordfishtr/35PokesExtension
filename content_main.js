@@ -10,10 +10,10 @@
     }
     else console.log("35Pokes Main: Unexpected init.");
 
-    const DEFAULT_TIERS = _.clone(BattleTeambuilderTable.gen9natdex.tierSet);
-    const DEFAULT_LEARNSETS = _.clone(BattleTeambuilderTable.learnsets);
-    const DEFAULT_POKEDEX = _.clone(BattlePokedex);
-    const DEFAULT_MOVEDEX = _.clone(BattleMovedex);
+    const DEFAULT_TIERS = structuredClone(BattleTeambuilderTable.gen9natdex.tierSet);
+    const DEFAULT_LEARNSETS = structuredClone(BattleTeambuilderTable.learnsets);
+    const DEFAULT_POKEDEX = structuredClone(BattlePokedex);
+    const DEFAULT_MOVEDEX = structuredClone(BattleMovedex);
 
     // THIS IS NOT A SECURE CHANNEL
     // Pokemon Showdown isn't a hostile website, but other extensions
@@ -64,11 +64,11 @@
     });
 
     function restoreDefaults() {
-        BattleTeambuilderTable.gen9natdex.tierSet = _.clone(DEFAULT_TIERS);
+        BattleTeambuilderTable.gen9natdex.tierSet = structuredClone(DEFAULT_TIERS);
         BattleTeambuilderTable.gen9natdex.tiers = null;
-        BattleTeambuilderTable.learnsets = _.clone(DEFAULT_LEARNSETS);
-        BattlePokedex = _.clone(DEFAULT_POKEDEX);
-        BattleMovedex = _.clone(DEFAULT_MOVEDEX);
+        BattleTeambuilderTable.learnsets = structuredClone(DEFAULT_LEARNSETS);
+        BattlePokedex = structuredClone(DEFAULT_POKEDEX);
+        BattleMovedex = structuredClone(DEFAULT_MOVEDEX);
     }
 
     function overrideAbilities(mon, abil1, abil2, abil3, abil4) {
