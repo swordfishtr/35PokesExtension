@@ -39,10 +39,10 @@
 
                 allowedMons.push(mon);
 
-                if(data.meta.meta[mon].abilities) overrideAbilities(mon, ...data.meta.meta[mon].abilities);
+                if(data.meta.meta[mon].abilities) overrideAbilities(toID(mon), ...data.meta.meta[mon].abilities);
 
                 // might turn mon.addMoves, etc. -> mon.moves {add: [], ban: [], set: []} to allow an if here
-                overrideLearnset(mon, data.meta.meta[mon].addMoves, data.meta.meta[mon].banMoves, data.meta.meta[mon].setMoves);
+                overrideLearnset(toID(mon), data.meta.meta[mon].addMoves, data.meta.meta[mon].banMoves, data.meta.meta[mon].setMoves);
 
             }
 
