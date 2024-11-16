@@ -46,7 +46,7 @@ async function checkUpdates() {
     await browser.storage.local.set({
         [KEY_METAGAMES]: metagames,
         [KEY_TIMESTAMP]: data_repo.pushed_at,
-        [KEY_CURRENT]: "ADV/2024_9.json" // EDITME: testing w no ui, remove before release
+        [KEY_CURRENT]: "Perfect/B1.json" // EDITME: testing w no ui, remove before release
     });
 
     STATE_DOWNLOADING = false;
@@ -88,7 +88,7 @@ async function interpretIndex(index) {
 
         buffer.rules = data_meta.rules;
 
-        // This format is relative, thus can't be interpreted in parallel. TODO: change `relative` to `parent`
+        // This format is relative, thus can't be interpreted in parallel.
         if(data_meta.rules?.parent) {
             buffer.add = data_meta.add;
             buffer.ban = data_meta.ban;
@@ -125,6 +125,8 @@ async function interpretIndex(index) {
         metagames[meta[0]] = meta[1];
     });
 
+    console.log(metagames);
+
     return metagames;
 }
 
@@ -134,7 +136,7 @@ function interpretName(name) {
 
     const vanilla = /^([0-9]+)_([0-9]+)(?:_([^_]+))?$/.exec(name);
     if(vanilla) {
-        return months[vanilla[2]] + " " + vanilla[1] + ( vanilla[3] ? " " + vanilla[3] : "" );
+        return months[Number(vanilla[2])] + " " + Number(vanilla[1]) + ( vanilla[3] ? " " + Number(vanilla[3]) : "" );
     }
 
     const perfect = /^([A-Z]+)([0-9]+)$/.exec(name);
