@@ -5,6 +5,8 @@ const KEY_METAGAMES = "metagames";
 const KEY_CURRENT = "current";
 const KEY_GROUPS = "opengroups";
 
+const btn_chal = document.getElementById("btn-chalcode");
+const btn_pow = document.getElementById("btn-power");
 const menu_l = document.getElementById("menu-l");
 const menu_r = document.getElementById("menu-r");
 
@@ -53,6 +55,8 @@ browser.storage.local.get({
     menu_r.append(...metagames_r);
 });
 
+btn_chal.addEventListener('click', chalCode);
+
 function getColumn(group) {
     if(Number(group)) {
         return metagames_l;
@@ -77,11 +81,58 @@ function selectMeta(meta) {
 
 function toggleGroup(e) {
     browser.storage.local.get({ [KEY_GROUPS]: [] }).then((stored) => {
-        const asd = stored[KEY_GROUPS].indexOf(e.target.section);
-        if(e.newState === "open" && asd < 0) stored[KEY_GROUPS].push(e.target.section);
-        else if(e.newState === "closed" && asd >= 0) stored[KEY_GROUPS].splice(asd, 1);
+        const prev = stored[KEY_GROUPS].indexOf(e.target.section);
+        if(e.newState === "open" && prev < 0) stored[KEY_GROUPS].push(e.target.section);
+        else if(e.newState === "closed" && prev >= 0) stored[KEY_GROUPS].splice(prev, 1);
         // This seems to fire for stored open groups on popup load on Chromium.
         else console.log("35Pokes Popup: Weird toggle state change detected: " + e.target.section);
         browser.storage.local.set({ [KEY_GROUPS]: stored[KEY_GROUPS] });
     });
+}
+
+function chalCode() {
+    browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]).then((stored) => {
+        if(!stored[KEY_METAGAMES] || !stored[KEY_CURRENT]) return;
+        const prefix = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].rules?.codePrefix ||
+        '/challenge gen9nationaldexag @@@ Z-Move Clause, -Mega, Terastal Clause, Sleep Clause Mod, Forme Clause, -Hidden Power, -Last Respects, -Kings Rock, -Shadow Tag, -Acupressure, -Battle Bond, -Quick Claw, -Razor Fang, Evasion Clause, OHKO Clause, baton pass stat trap clause, -All Pokemon, +';
+        const code = prefix + Object.keys(stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].meta).join(", +");
+        copyTextToClipboard(code);
+    });
+}
+
+// Thanks Sam!
+
+function fallbackCopyTextToClipboard(text) {
+	var textArea = document.createElement("textarea");
+	textArea.value = text;
+	
+	textArea.style.top = "0";
+	textArea.style.left = "0";
+	textArea.style.position = "fixed";
+  
+	document.body.appendChild(textArea);
+	textArea.focus();
+	textArea.select();
+  
+	try {
+	  var successful = document.execCommand('copy');
+	  var msg = successful ? 'successful' : 'unsuccessful';
+	  console.log('Fallback: Copying text command was ' + msg);
+	} catch (err) {
+	  console.error('Fallback: Oops, unable to copy', err);
+	}
+	
+	document.body.removeChild(textArea);
+}
+
+function copyTextToClipboard(text) {
+	if (!navigator.clipboard) {
+	  fallbackCopyTextToClipboard(text);
+	  return;
+	}
+	navigator.clipboard.writeText(text).then(function() {
+	  console.log('Async: Copying to clipboard was successful!');
+	}, function(err) {
+	  console.error('Async: Could not copy text: ', err);
+	});
 }
