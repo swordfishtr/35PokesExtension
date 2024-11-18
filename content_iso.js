@@ -12,13 +12,11 @@ browser.storage.onChanged.addListener(async (changes) => {
     // KEY_CURRENT, KEY_METAGAMES, KEY_POWER are never together
     if(changes[KEY_CURRENT]) {
         const stored = await browser.storage.local.get(KEY_METAGAMES);
-        //sendMeta(stored[KEY_METAGAMES][changes.newValue]);
-        sendMeta(stored[KEY_METAGAMES][changes[KEY_CURRENT].newValue]);
+        sendMeta(stored[KEY_METAGAMES][changes[KEY_CURRENT].newValue[0]][changes[KEY_CURRENT].newValue[1]]);
     }
     else if(changes[KEY_METAGAMES]) {
         const stored = await browser.storage.local.get(KEY_CURRENT);
-        //sendMeta(stored[KEY_CURRENT]);
-        sendMeta(changes[KEY_METAGAMES].newValue[KEY_CURRENT]);
+        sendMeta(changes[KEY_METAGAMES].newValue[stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]]);
     }
     // add power handling here
     else {
@@ -27,8 +25,10 @@ browser.storage.onChanged.addListener(async (changes) => {
 });
 
 browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]).then((stored) => {
-    if(stored[KEY_METAGAMES] && stored[KEY_CURRENT])
-        sendMeta(stored[KEY_METAGAMES][stored[KEY_CURRENT]]);
+    if(stored[KEY_METAGAMES] && stored[KEY_CURRENT]) {
+        console.log(stored);
+        sendMeta(stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]]);
+    }
 
     browser.runtime.sendMessage(MSG_REFRESH);
 });

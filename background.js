@@ -8,6 +8,7 @@ const KEY_TIMESTAMP = "timestamp";
 
 var STATE_DOWNLOADING = false;
 
+// Check whether storage is wiped.
 browser.storage.local.get(null).then((stored) => {
     for(const x in stored) if(x) return;
     checkUpdates();
@@ -46,7 +47,7 @@ async function checkUpdates() {
     await browser.storage.local.set({
         [KEY_METAGAMES]: metagames,
         [KEY_TIMESTAMP]: data_repo.pushed_at,
-        [KEY_CURRENT]: "Perfect/B1.json" // EDITME: testing w no ui, remove before release
+        [KEY_CURRENT]: ["Perfect", "B1"] // EDITME: testing w no ui, remove before release
     });
 
     STATE_DOWNLOADING = false;
@@ -62,22 +63,18 @@ async function interpretIndex(index) {
         if(meta.type !== "blob") return;
         if(meta.path === "LICENSE") return;
 
-        //// Group and Name
-
-        // Assuming at most 1 subdir
-        const id = /^(?:([^\/]+)\/)?([^\/]+)?\.json$/.exec(meta.path);
+        const id = interpretPath(meta.path);
         if(!id) {
             console.log("35Pokes Background: Invalid metagame data path: " + meta.path);
             return;
         }
 
-        const buffer = {};
-
-        // Group can be manipulated like name before assignment
+        const buffer = {}
+        
         buffer.group = id[1];
         buffer.name = interpretName(id[2]);
 
-        //// Pokemon, Moves, Abilities, Rules
+        if(!metagames[id[1]]) metagames[id[1]] = {};
 
         const data_meta_res = await fetch("https://raw.githubusercontent.com/swordfishtr/35PokesIndex/main/" + meta.path);
         if(!data_meta_res.ok) {
@@ -88,41 +85,47 @@ async function interpretIndex(index) {
 
         buffer.rules = data_meta.rules;
 
-        // This format is relative, thus can't be interpreted in parallel.
+        // Relative formats can't be interpreted in parallel. We'll do that next.
         if(data_meta.rules?.parent) {
             buffer.add = data_meta.add;
             buffer.ban = data_meta.ban;
+            buffer.id = id;
+            // Store in a single object to make sorting reasonable.
             metagamesRelative[meta.path] = buffer;
             return;
         }
 
         interpretPokemon(buffer, data_meta);
-        
-        metagames[meta.path] = buffer;
+
+        metagames[id[1]][id[2]] = buffer;
     }));
 
-    // Determine height of each relative meta.
+    // Interpret relative metas in the order of lowest to greatest height.
     Object.values(metagamesRelative).forEach((meta) => {
         traverseMetagames(metagames, metagamesRelative, meta);
     });
+    Object.values(metagamesRelative).sort((a, b) => a.rules.height - b.rules.height).forEach((meta) => {
+        // Should trigger format type 1 or 2. Additions first because this sets the meta property.
+        interpretPokemon(meta, meta.add);
 
-    // Interpret relative metas in the order of lowest to greatest height.
-    // This ensures that every meta's parent is already interpreted by the time it's its turn.
-    Object.entries(metagamesRelative).sort((a, b) => a[1].rules.height - b[1].rules.height).forEach((meta) => {
-        // should trigger format type 1 or 2
-        interpretPokemon(meta[1], meta[1].add);
+        const parent = interpretPath(meta.rules.parent);
 
-        // current format of stored metas does not support multiples of the same pokemon, though the teambuilder
-        // does have limited support for it - a pokemon can't have a different set of abilities or moves for each of its entries.
-        for(const mon in metagames[meta[1].rules.parent].meta) {
-            if(!meta[1].meta[mon] && !meta[1].ban.includes(mon))
-                meta[1].meta[mon] = metagames[meta[1].rules.parent].meta[mon];
+        // Pull the common pokemon from parent meta.
+        for(const mon in metagames[parent[1]][parent[2]].meta) {
+            if(!meta.meta[mon] && !meta.ban.includes(mon))
+                meta.meta[mon] = metagames[parent[1]][parent[2]].meta[mon];
         }
 
-        delete meta[1].add;
-        delete meta[1].ban;
-        delete meta[1].rules.height;
-        metagames[meta[0]] = meta[1];
+        // The current format of stored metas does not support multiples of the same pokemon, though the teambuilder
+        // does have limited support for it - a pokemon can't have a different set of abilities or moves for each of its entries.
+
+        metagames[meta.id[1]][meta.id[2]] = meta;
+        delete meta.add;
+        delete meta.ban;
+        delete meta.id;
+        delete meta.rules.height;
+        delete meta.rules.parent;
+
     });
 
     console.log(metagames);
@@ -131,12 +134,22 @@ async function interpretIndex(index) {
 }
 
 
+// Capture "group/name.json" as [1]=group, [2]=name. We support at most 1 subdir.
+function interpretPath(path) {
+    const result = /^(?:([^\/]+)\/)?([^\/]+)?\.json$/.exec(path);
+    // Ensure that the group property is defined even for metagames in the root dir.
+    if(result && !result[1]) result[1] = result[2].slice(0, path.indexOf("_"));
+    return result;
+}
+
+
+// Handles custom naming schemes.
 function interpretName(name) {
     const months = ["Error", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     const vanilla = /^([0-9]+)_([0-9]+)(?:_([^_]+))?$/.exec(name);
     if(vanilla) {
-        return months[Number(vanilla[2])] + " " + Number(vanilla[1]) + ( vanilla[3] ? " " + Number(vanilla[3]) : "" );
+        return months[Number(vanilla[2])] + " " + Number(vanilla[1]) + ( vanilla[3] ? " " + vanilla[3] : "" );
     }
 
     const perfect = /^([A-Z]+)([0-9]+)$/.exec(name);
@@ -149,27 +162,23 @@ function interpretName(name) {
 
 
 function interpretPokemon(buffer, mons) {
-    
     // We support 4 kinds of formatting: (props = learnsets, abilities)
     // 1. Default rules + default props: [mons]
     // 2. Default rules + modified props: {mons}
     // 3. Modified rules + default props: {rules:{}, meta:[mons]}
     // 4. Modified rules + modified props: {rules:{}, meta:{mons}}
-    // We store metagame data in format type 4.
 
     // Format type 1
     if(Array.isArray(mons)) {
         buffer.meta = {};
-        for(const mon of mons) {
+        for(const mon of mons) { //of mons.sort()
             buffer.meta[mon] = {};
         }
     }
-    
     // Format type 2
     else if(!mons.meta) {
         buffer.meta = mons;
     }
-
     // Format type 3
     else if(Array.isArray(mons.meta)) {
         buffer.meta = {};
@@ -177,14 +186,14 @@ function interpretPokemon(buffer, mons) {
             buffer.meta[mon] = {};
         }
     }
-
-    // Format type 4
+    // Format type 4 (preferred)
     else {
         buffer.meta = mons.meta;
     }
-
 }
 
+
+// Sets height for a given meta and its parent chain.
 function traverseMetagames(metagames, metagamesRelative, self) {
     if(self.rules.height === 0) {
         throw new Error("35Pokes Background: Circular metagame hierarchy: " + self.name);
@@ -193,9 +202,9 @@ function traverseMetagames(metagames, metagamesRelative, self) {
         // We have already traversed this part of the branch up to the root. No need to repeat.
         return self.rules.height;
     }
-    if(metagames[self.rules.parent]) {
-        self.rules.height = 1;
-        return 1;
+    const parent = interpretPath(self.rules.parent);
+    if(metagames[parent[1]][parent[2]]) {
+        return self.rules.height = 1;
     }
     if(metagamesRelative[self.rules.parent]) {
         // This order is important for detecting circular dependencies.
