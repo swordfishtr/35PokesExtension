@@ -11,6 +11,7 @@
     else console.log("35Pokes Main: Unexpected init.");
 
     const DEFAULT_TIERS = structuredClone(BattleTeambuilderTable.gen9natdex.tierSet);
+    const DEFAULT_SLICE = BattleTeambuilderTable.gen9natdex.formatSlices.AG;
     const DEFAULT_LEARNSETS = structuredClone(BattleTeambuilderTable.learnsets);
     const DEFAULT_POKEDEX = structuredClone(BattlePokedex);
     const DEFAULT_MOVEDEX = structuredClone(BattleMovedex);
@@ -27,45 +28,38 @@
             return;
         }
 
-        if(data.action === "setMeta") {
-
-            restoreDefaults();
-
-            if(data.meta.rules?.generation < 9) overrideMoveData(data.meta.rules.generation);
-
-            const allowedMons = [];
-
-            for(const mon in data.meta.meta) {
-
-                allowedMons.push(mon);
-
-                if(data.meta.meta[mon].abilities) overrideAbilities(toID(mon), ...data.meta.meta[mon].abilities);
-
-                // might turn mon.addMoves, etc. -> mon.moves {add: [], ban: [], set: []} to allow an if here
-                overrideLearnset(toID(mon), data.meta.meta[mon].addMoves, data.meta.meta[mon].banMoves, data.meta.meta[mon].setMoves);
-
-            }
-
-            const TEMP_NAME = (data.meta.group ? data.meta.group + " " : "") + data.meta.name;
-            overridePokemonPool(TEMP_NAME, allowedMons);
-
-            // research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
-            if(app.rooms.teambuilder?.curChartType === "pokemon") app.rooms.teambuilder.updateChart(true);
-
-        }
-        else if(data.action === "setPower" && typeof data.value === "boolean") {
-
-        }
-        else {
+        if(typeof data !== "object") {
             console.log("35Pokes Main: Received unknown message.");
             return;
         }
+
+        restoreDefaults();
+
+        // alternative: !_.isEmpty(data)
+        if(!$.isEmptyObject(data)) {
+
+            if(data.meta.rules?.generation < 9) overrideMoveData(data.meta.rules.generation);
+
+            Object.entries(data.meta).forEach((mon) => {
+                if(mon[1].abilities) overrideAbilities(toID(mon[0]), ...mon[1].abilities);
+                // might turn mon.addMoves, etc. -> mon.moves {add: [], ban: [], set: []} to allow an if here
+                overrideLearnset(toID(mon[0]), mon[1].addMoves, mon[1].banMoves, mon[1].setMoves);
+            });
+
+            if(!Number(data.group)) data.name = data.group + " " + data.name;
+            overridePokemonPool(data.name, Object.keys(data.meta)); // can optionally be sorted
+
+        };
+
+        // research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
+        if(app.rooms.teambuilder?.curChartType === "pokemon") app.rooms.teambuilder.updateChart(true);
 
     });
 
     function restoreDefaults() {
         BattleTeambuilderTable.gen9natdex.tierSet = structuredClone(DEFAULT_TIERS);
         BattleTeambuilderTable.gen9natdex.tiers = null;
+        BattleTeambuilderTable.gen9natdex.formatSlices.AG = DEFAULT_SLICE;
         BattleTeambuilderTable.learnsets = structuredClone(DEFAULT_LEARNSETS);
         BattlePokedex = structuredClone(DEFAULT_POKEDEX);
         BattleMovedex = structuredClone(DEFAULT_MOVEDEX);
@@ -105,7 +99,7 @@
     // This is the least destructive approach possible.
     function overridePokemonPool(name, meta) {
         const TEMP_ARR = meta.map((mon) => ["pokemon", mon]);
-        TEMP_ARR.unshift(["header", "35 Pokes: " + name]);
+        TEMP_ARR.unshift(["header", "35 Pokes:&nbsp;&nbsp;&nbsp;&nbsp;" + name]);
         BattleTeambuilderTable.gen9natdex.formatSlices.AG = BattleTeambuilderTable.gen9natdex.tierSet.length;
         BattleTeambuilderTable.gen9natdex.tierSet.push(...TEMP_ARR);
     }

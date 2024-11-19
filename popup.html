@@ -10,14 +10,15 @@
             <li>
                 <input name="search" placeholder="Search formats" value="" class="textbox autofocus" autocomplete="off">
                 <button id="btn-chalcode" class="button">Challenge Code</button>
-                <button id="btn-power" class="button">Power</button>
+                <label class="switch">
+                    <input type="checkbox" id="btn-power">
+                    <span class="slider"></span>
+                </label>
             </li>
         </ul>
         <span name="formats">
-            <ul id="menu-l" class="popupmenu" style="float:left;padding-left:5px">
-            </ul>
-            <ul id="menu-r" class="popupmenu" style="float:left;padding-left:64px">
-            </ul>
+            <ul id="menu-l" class="popupmenu" style="float:left;padding-left:5px"></ul>
+            <ul id="menu-r" class="popupmenu" style="float:left;padding-left:64px"></ul>
         </span>
     </div>
     <script src="popup.js"></script>

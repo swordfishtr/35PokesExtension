@@ -4,6 +4,7 @@ if (typeof browser === "undefined") globalThis.browser = chrome;
 const KEY_METAGAMES = "metagames";
 const KEY_CURRENT = "current";
 const KEY_GROUPS = "opengroups";
+const KEY_POWER = "power";
 
 const btn_chal = document.getElementById("btn-chalcode");
 const btn_pow = document.getElementById("btn-power");
@@ -18,8 +19,11 @@ const semiOfficials = ["Babies", "Seniors", "Doubles", "Tours"];
 browser.storage.local.get({
     [KEY_METAGAMES]: {},
     [KEY_CURRENT]: ["2024", "2024_11"],
-    [KEY_GROUPS]: ["2024"]
+    [KEY_GROUPS]: ["2024"],
+    [KEY_POWER]: false
 }).then((stored) => {
+    btn_pow.checked = stored[KEY_POWER];
+
     for(const group in stored[KEY_METAGAMES]) {
 
         const col = getColumn(group);
@@ -41,7 +45,8 @@ browser.storage.local.get({
             const button = document.createElement("button");
             button.name = "selectFormat";
             button.value = meta[0];
-            button.className = "option";
+            button.classList.add("option");
+            if(stored[KEY_CURRENT][0] === group && stored[KEY_CURRENT][1] === meta[0]) button.classList.add("cur");
             button.innerText = meta[1].name;
             button.onclick = (e) => selectMeta([group, meta[0]]);
             details.appendChild(li);
@@ -55,7 +60,12 @@ browser.storage.local.get({
     menu_r.append(...metagames_r);
 });
 
-btn_chal.addEventListener('click', chalCode);
+btn_chal.addEventListener("click", chalCode);
+btn_pow.addEventListener("change", togglePower);
+
+function render(search) {
+    const filter = search ? new RegExp(search, "i") : null;
+}
 
 function getColumn(group) {
     if(Number(group)) {
@@ -76,6 +86,15 @@ function selectMeta(meta) {
     console.log(meta);
     browser.storage.local.set({
         [KEY_CURRENT]: meta
+    });
+}
+
+function togglePower(e) {
+    const state = e.target.checked;
+    browser.storage.local.get(KEY_POWER).then((stored) => {
+        if((state && !stored[KEY_POWER]) || (!state && stored[KEY_POWER]))
+            browser.storage.local.set({ [KEY_POWER]: state });
+        else console.log("35Pokes Popup: Weird power state change detected: " + state);
     });
 }
 
