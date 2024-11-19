@@ -25,7 +25,7 @@ browser.storage.local.get({
     [KEY_GROUPS]: ["2024"],
     [KEY_POWER]: false
 }).then((stored) => {
-    btn_pow.checked = stored[KEY_POWER];
+    if(stored[KEY_POWER]) btn_pow.classList.add("active");
 
     for(const group in stored[KEY_METAGAMES]) {
 
@@ -65,7 +65,7 @@ browser.storage.local.get({
 
 input_search.addEventListener("input", filterMetas);
 btn_chal.addEventListener("click", chalCode);
-btn_pow.addEventListener("change", togglePower);
+btn_pow.addEventListener("click", togglePower);
 
 function filterMetas(search) {
     if(search.target.value) {
@@ -142,13 +142,15 @@ function selectMeta(e) {
     });
 }
 
-function togglePower(e) {
-    const state = e.target.checked;
-    browser.storage.local.get(KEY_POWER).then((stored) => {
-        if((state && !stored[KEY_POWER]) || (!state && stored[KEY_POWER]))
-            browser.storage.local.set({ [KEY_POWER]: state });
-        else console.log("35Pokes Popup: Weird power state change detected: " + state);
-    });
+function togglePower() {
+    if(btn_pow.classList.contains("active")) {
+        btn_pow.classList.remove("active");
+        browser.storage.local.set({ [KEY_POWER]: false });
+    }
+    else {
+        btn_pow.classList.add("active");
+        browser.storage.local.set({ [KEY_POWER]: true });
+    }
 }
 
 function toggleGroup(e) {
