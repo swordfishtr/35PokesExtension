@@ -6,6 +6,7 @@ const KEY_CURRENT = "current";
 const KEY_GROUPS = "opengroups";
 const KEY_POWER = "power";
 
+const input_search = document.getElementById("input-search");
 const btn_chal = document.getElementById("btn-chalcode");
 const btn_pow = document.getElementById("btn-power");
 const menu_l = document.getElementById("menu-l");
@@ -15,6 +16,8 @@ const metagames_l = [];
 const metagames_r = [];
 
 const semiOfficials = ["Babies", "Seniors", "Doubles", "Tours"];
+
+var searching = false;
 
 browser.storage.local.get({
     [KEY_METAGAMES]: {},
@@ -48,7 +51,7 @@ browser.storage.local.get({
             button.classList.add("option");
             if(stored[KEY_CURRENT][0] === group && stored[KEY_CURRENT][1] === meta[0]) button.classList.add("cur");
             button.innerText = meta[1].name;
-            button.onclick = (e) => selectMeta([group, meta[0]]);
+            button.onclick = selectMeta;
             details.appendChild(li);
             li.appendChild(button);
 
@@ -60,11 +63,53 @@ browser.storage.local.get({
     menu_r.append(...metagames_r);
 });
 
+input_search.addEventListener("input", filterMetas);
 btn_chal.addEventListener("click", chalCode);
 btn_pow.addEventListener("change", togglePower);
 
-function render(search) {
-    const filter = search ? new RegExp(search, "i") : null;
+function filterMetas(search) {
+    if(search.target.value) {
+        searching = true;
+        const filter = new RegExp(search.target.value, "i");
+        menu_l.childNodes.forEach((details) => {
+            details.open = true;
+            details.childNodes.forEach((li, key) => {
+                if(key === 0) return;
+                if(filter.test(li.lastChild.innerText)) li.lastChild.style.display = "inline-block";
+                else li.lastChild.style.display = "none";
+            });
+        });
+        menu_r.childNodes.forEach((details) => {
+            details.open = true;
+            details.childNodes.forEach((li, key) => {
+                if(key === 0) return;
+                if(filter.test(li.lastChild.innerText)) li.lastChild.style.display = "inline-block";
+                else li.lastChild.style.display = "none";
+            });
+        });
+    }
+    else {
+        browser.storage.local.get(KEY_GROUPS).then((stored) => {
+            menu_l.childNodes.forEach((details) => {
+                if(stored[KEY_GROUPS].includes(details.firstChild.lastChild.innerText)) details.open = true;
+                else details.open = false;
+                details.childNodes.forEach((li, key) => {
+                    if(key === 0) return;
+                    li.lastChild.style.display = "inline-block";
+                });
+            });
+            menu_r.childNodes.forEach((details) => {
+                if(stored[KEY_GROUPS].includes(details.firstChild.lastChild.innerText)) details.open = true;
+                else details.open = false;
+                details.childNodes.forEach((li, key) => {
+                    if(key === 0) return;
+                    li.lastChild.style.display = "inline-block";
+                });
+            });
+            searching = false
+        });
+    }
+    
 }
 
 function getColumn(group) {
@@ -77,13 +122,21 @@ function getColumn(group) {
     return metagames_r;
 }
 
-function displayError(msg) {
-    menu_r.style.display = "none";
-    menu_l.append(msg);
-}
-
-function selectMeta(meta) {
-    console.log(meta);
+function selectMeta(e) {
+    menu_l.childNodes.forEach((details) => {
+        details.childNodes.forEach((li, key) => {
+            if(key === 0) return;
+            li.lastChild.classList.remove("cur");
+        });
+    });
+    menu_r.childNodes.forEach((details) => {
+        details.childNodes.forEach((li, key) => {
+            if(key === 0) return;
+            li.lastChild.classList.remove("cur");
+        });
+    });
+    e.target.classList.add("cur");
+    const meta = [e.target.parentElement.parentElement.section, e.target.value];
     browser.storage.local.set({
         [KEY_CURRENT]: meta
     });
@@ -99,6 +152,7 @@ function togglePower(e) {
 }
 
 function toggleGroup(e) {
+    if(searching) return;
     browser.storage.local.get({ [KEY_GROUPS]: [] }).then((stored) => {
         const prev = stored[KEY_GROUPS].indexOf(e.target.section);
         if(e.newState === "open" && prev < 0) stored[KEY_GROUPS].push(e.target.section);
