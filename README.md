@@ -1,4 +1,4 @@
-<img src="./screenshots/1.png" alt='The popup menu; it has a dark theme and includes a text input labeled "Search Format", a button labeled "Challenge Code", a button with a shutdown icon and a format selection with collapsable categories.' height="200"/><img src="./screenshots/2.png" alt="Pokemon Showdown's teambuilder interface; it displays a listing of one of 35 Pokes' metagames featuring customized abilities." height="200"/>
+<img src="./screenshots/1.png" alt='The popup menu; it has a dark theme and includes a text input labeled "Search Format", a button labeled "Challenge Code", a button with a shutdown icon and a format selection with collapsable categories.' height="400"/><img src="./screenshots/2.png" alt="Pokemon Showdown's teambuilder interface; it displays a listing of one of 35 Pokes' metagames featuring customized abilities." height="400"/>
 
 # 35 Pokes Extension
 
