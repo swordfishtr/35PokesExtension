@@ -36,7 +36,7 @@ browser.storage.local.get({
         details.ontoggle = (e) => toggleGroup(e);
         const summary = document.createElement("summary");
         const strong = document.createElement("strong");
-        strong.style.color = "#579";
+        //strong.style.color = "#579";
         strong.innerText = group;
         details.appendChild(summary);
         summary.appendChild(strong);
@@ -58,6 +58,8 @@ browser.storage.local.get({
         });
 
     }
+
+    metagames_l.reverse();
 
     menu_l.append(...metagames_l);
     menu_r.append(...metagames_r);
