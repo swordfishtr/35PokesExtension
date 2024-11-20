@@ -1,5 +1,5 @@
-<img src="./screenshots/1.png" alt="screenshot 1" height="400"/>
-<img src="./screenshots/2.png" alt="screenshot 2" height="400"/>
+<img src="./screenshots/1.png" alt="screenshot 1" height="200"/>
+<img src="./screenshots/2.png" alt="screenshot 2" height="200"/>
 
 # 35 Pokes Extension
 
