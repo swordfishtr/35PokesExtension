@@ -5,10 +5,7 @@
     "version": "0.1",
     "homepage_url": "https://github.com/swordfishtr/35PokesExtension",
     "icons": {
-        "16": "35_logo.PNG",
-        "32": "35_logo.PNG",
-        "48": "35_logo.PNG",
-        "128": "35_logo.PNG"
+        "48": "35_logo.PNG"
     },
     "action": {
         "default_popup": "popup.html"
@@ -36,6 +33,7 @@
     "minimum_chrome_version": "121",
     "browser_specific_settings": {
         "gecko": {
+            "id": "35pokes.demirab1@smogon",
             "strict_min_version": "121.0"
         },
         "gecko_android": {}

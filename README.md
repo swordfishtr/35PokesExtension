@@ -20,11 +20,13 @@ This is a browser extension that modifies exposed data in the Pokemon Showdown C
 
 ### Firefox
 
-Get it from AMO: (to be added)
+Get it from AMO: https://addons.mozilla.org/en-US/firefox/addon/35-pokes-extension/
 
 ### Chrome
 
-Get it from the releases tab: (to be added)
+- Download this repo as zip and uncompress it.
+
+- Enable developer mode in `chrome://extensions/` and load unpacked the extension.
 
 ## Roadmap
 
