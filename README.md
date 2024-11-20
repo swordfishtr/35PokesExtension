@@ -1,3 +1,6 @@
+<img src="./screenshots/1.png" alt="screenshot 1" height="400"/>
+<img src="./screenshots/2.png" alt="screenshot 2" height="400"/>
+
 # 35 Pokes Extension
 
 This is a browser extension that modifies exposed data in the Pokemon Showdown Client to achieve functionalities supporting the 35 Pokes community.
