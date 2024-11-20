@@ -138,8 +138,10 @@ button.option {
 	color: #DDD;
 	box-shadow: none;
 }
+button.option.cur {
+	border-color: #999999;
+}
 button.option:hover,
-button.option.sel:hover,
 button.option.cur:hover {
 	border-color: #777777;
 	background-color: rgba(100, 100, 100, 0.5);

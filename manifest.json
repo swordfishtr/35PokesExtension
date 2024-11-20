@@ -32,5 +32,12 @@
     "host_permissions": [
         "https://api.github.com/repos/swordfishtr/*",
         "https://raw.githubusercontent.com/swordfishtr/*"
-    ]
+    ],
+    "minimum_chrome_version": "121",
+    "browser_specific_settings": {
+        "gecko": {
+            "strict_min_version": "121.0"
+        },
+        "gecko_android": {}
+    }
 }
