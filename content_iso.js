@@ -9,9 +9,6 @@ const KEY_POWER = "power";
 
 // KEY_CURRENT, KEY_METAGAMES, KEY_POWER are never together
 browser.storage.onChanged.addListener(async (changes) => {
-    console.log("35Pokes Isolated: Storage event:");
-    console.log(changes);
-
     // User selected another meta.
     if(changes[KEY_CURRENT]) {
         const stored = await browser.storage.local.get([KEY_METAGAMES, KEY_POWER]);

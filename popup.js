@@ -36,7 +36,6 @@ browser.storage.local.get({
         details.ontoggle = (e) => toggleGroup(e);
         const summary = document.createElement("summary");
         const strong = document.createElement("strong");
-        //strong.style.color = "#579";
         strong.innerText = group;
         details.appendChild(summary);
         summary.appendChild(strong);

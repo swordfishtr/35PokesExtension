@@ -8,6 +8,15 @@ const KEY_TIMESTAMP = "timestamp";
 
 var STATE_DOWNLOADING = false;
 
+browser.runtime.onInstalled.addListener((details) => {
+    if(details.reason === "browser_update" || details.reason === "chrome_update") return;
+    if(details.reason === "install") {
+        // Ensure that Showdown receives a meta, even if the user hasn't set one yet.
+        browser.storage.local.set({ [KEY_CURRENT]: ["2024", "2024_11"] });
+        checkUpdates();
+    }
+});
+
 // Check whether storage is wiped.
 browser.storage.local.get(null).then((stored) => {
     for(const x in stored) if(x) return;
@@ -44,10 +53,11 @@ async function checkUpdates() {
 
     const metagames = await interpretIndex(data_index.tree);
 
+    console.log(metagames);
+
     await browser.storage.local.set({
         [KEY_METAGAMES]: metagames,
-        [KEY_TIMESTAMP]: data_repo.pushed_at,
-        [KEY_CURRENT]: ["Perfect", "B1"] // EDITME: testing w no ui, remove before release
+        [KEY_TIMESTAMP]: data_repo.pushed_at
     });
 
     STATE_DOWNLOADING = false;
@@ -70,8 +80,7 @@ async function interpretIndex(index) {
         }
 
         const buffer = {}
-        
-        buffer.group = id[1];
+
         buffer.name = interpretName(id[2]);
 
         if(!metagames[id[1]]) metagames[id[1]] = {};
@@ -127,8 +136,6 @@ async function interpretIndex(index) {
         delete meta.rules.parent;
 
     });
-
-    console.log(metagames);
 
     return metagames;
 }
