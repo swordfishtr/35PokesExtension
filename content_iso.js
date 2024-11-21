@@ -1,6 +1,9 @@
 // Polyfill for browser compatibility
 if (typeof browser === "undefined") globalThis.browser = chrome;
 
+if(globalThis.hasRun_35pokes_iso) return;
+globalThis.hasRun_35pokes_iso = true;
+
 const MSG_REFRESH = "refresh";
 const MSG_META = "setMeta";
 const KEY_METAGAMES = "metagames";

@@ -1,5 +1,8 @@
 (() => {
 
+    if(globalThis.hasRun_35pokes_main) return;
+    globalThis.hasRun_35pokes_main = true;
+
     // tierSet is created from tiers - see battle-dex-search.ts 1003. Force create tierSet
     if(BattleTeambuilderTable.gen9natdex.tiers && !BattleTeambuilderTable.gen9natdex.tierSet) {
         const TEMP_BPS = new BattlePokemonSearch();

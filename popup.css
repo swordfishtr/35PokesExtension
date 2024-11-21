@@ -3,6 +3,10 @@ html {
     margin: 0;
     background-color: #0D151E;
     width: max-content;
+	height: max-content;
+	overflow: auto;
+	scrollbar-gutter: stable;
+	scrollbar-color: #4e525a #2b2c31;
 }
 
 ul {
@@ -28,6 +32,7 @@ ul.menu-r {
 
 details {
     margin-bottom: 16px;
+	
 }
 
 summary {
@@ -84,6 +89,7 @@ button.active:active {
 #btn-power {
     display: flex;
     padding: 4px;
+	margin-left: auto;
 }
 
 
