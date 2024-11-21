@@ -126,6 +126,7 @@
                     switch(prop) {
                         // ignore useless props in large numbers
                         case "desc":
+                        case "isNonstandard":
                         case "zMove":
                         case "maxMove":
                             break;

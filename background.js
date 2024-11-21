@@ -37,16 +37,21 @@ async function checkUpdates() {
     const data_repo_res = await fetch("https://api.github.com/repos/swordfishtr/35PokesIndex");
     if(!data_repo_res.ok) {
         console.log("35Pokes Background: Failed to fetch repository metadata.");
+        STATE_DOWNLOADING = false;
         return;
     }
     const data_repo = await data_repo_res.json();
 
     const stored = await browser.storage.local.get(KEY_TIMESTAMP);
-    if(stored[KEY_TIMESTAMP] === data_repo.pushed_at) return;
+    if(stored[KEY_TIMESTAMP] === data_repo.pushed_at) {
+        STATE_DOWNLOADING = false;
+        return;
+    }
 
     const data_index_res = await fetch("https://api.github.com/repos/swordfishtr/35PokesIndex/git/trees/main?recursive=1");
     if(!data_index_res.ok) {
         console.log("35Pokes Background: Failed to fetch repository index.");
+        STATE_DOWNLOADING = false;
         return;
     }
     const data_index = await data_index_res.json();
@@ -164,6 +169,7 @@ function interpretName(name) {
         return "Vision " + perfect[1] + ", Version " + perfect[2];
     }
 
+    STATE_DOWNLOADING = false;
     throw new Error("35Pokes Background: Failed to interpret meta name " + name);
 }
 
@@ -203,6 +209,7 @@ function interpretPokemon(buffer, mons) {
 // Sets height for a given meta and its parent chain.
 function traverseMetagames(metagames, metagamesRelative, self) {
     if(self.rules.height === 0) {
+        STATE_DOWNLOADING = false;
         throw new Error("35Pokes Background: Circular metagame hierarchy: " + self.name);
     }
     if(self.rules.height) {
@@ -220,5 +227,6 @@ function traverseMetagames(metagames, metagamesRelative, self) {
         self.rules.height++;
         return self.rules.height;
     }
+    STATE_DOWNLOADING = false;
     throw new Error("35Pokes Background: Could not find parent metagame of " + self.name);
 }
