@@ -83,15 +83,15 @@
     function overrideLearnset(mon, addMoves, banMoves, setMoves) {
         const learnset = BattleTeambuilderTable.learnsets[mon];
         if(setMoves) {
-            for(const move of learnset) delete learnset[move];
-            for(const move of setMoves) learnset[move] = "9a";
+            for(const move of learnset) delete learnset[toID(move)];
+            for(const move of setMoves) learnset[toID(move)] = "9a";
             return;
         }
         if(addMoves) {
-            for(const move of addMoves) learnset[move] = "9a";
+            for(const move of addMoves) learnset[toID(move)] = "9a";
         }
         if(banMoves) {
-            for(const move of banMoves) delete learnset[move];
+            for(const move of banMoves) delete learnset[toID(move)];
             const prevo = BattlePokedex[mon].prevo;
             if(prevo) overrideLearnset(toID(prevo), addMoves, banMoves, setMoves);
         }
@@ -126,7 +126,6 @@
                     switch(prop) {
                         // ignore useless props in large numbers
                         case "desc":
-                        case "isNonstandard":
                         case "zMove":
                         case "maxMove":
                             break;
