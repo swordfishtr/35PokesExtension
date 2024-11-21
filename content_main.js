@@ -38,7 +38,7 @@
         // alternative: !_.isEmpty(data)
         if(!$.isEmptyObject(data)) {
 
-            if(data.meta.rules?.generation < 9) overrideMoveData(data.meta.rules.generation);
+            if(data.rules?.generation < 9) overrideMoveData(data.rules.generation);
 
             Object.entries(data.meta).forEach((mon) => {
                 if(mon[1].abilities) overrideAbilities(toID(mon[0]), ...mon[1].abilities);
