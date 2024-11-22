@@ -4,6 +4,9 @@
 
 This is a browser extension that modifies exposed data in the Pokemon Showdown Client to achieve functionalities supporting the 35 Pokes community.
 
+> [!NOTE]
+> Metagame data is maintained in a separate, dedicated repository: [35 Pokes Index](https://github.com/swordfishtr/35PokesIndex)
+
 ## Features
 
 - Format selection much like the kind that the client provides. This is the place to generate a challenge code, or turn the extension on/off.
@@ -30,13 +33,13 @@ Get it from AMO: https://addons.mozilla.org/en-US/firefox/addon/35-pokes-extensi
 
 - Enable developer mode in `chrome://extensions/` and load unpacked the extension.
 
-## Roadmap
+## TODO
 
-- Support item add/ban/set in meta rules.
+- [ ] Support item add/ban/set in meta rules.
 
-- Modify calc data for past gen metas.
+- [ ] Modify calc data for past gen metas.
 
-- Local, user created metagames - create, modify, delete, sort, custom chal code, import/export json.
+- [ ] Local, user created metagames - create, modify, delete, sort, custom chal code, import/export json.
 
 ## History
 
