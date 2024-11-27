@@ -81,7 +81,7 @@
     }
 
     function overrideLearnset(mon, addMoves, banMoves, setMoves) {
-        const learnset = BattleTeambuilderTable.learnsets[mon];
+        const learnset = BattleTeambuilderTable.learnsets[mon] || {};
         if(setMoves) {
             for(const move of learnset) delete learnset[toID(move)];
             for(const move of setMoves) learnset[toID(move)] = "9a";
