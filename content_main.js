@@ -1,3 +1,4 @@
+"use strict";
 (() => {
 
     if(globalThis.hasRun_35pokes_main) return;
@@ -41,7 +42,12 @@
         // alternative: !_.isEmpty(data)
         if(!$.isEmptyObject(data)) {
 
-            if(data.rules?.generation < 9) overrideMoveData(data.rules.generation);
+            if(data.rules) {
+                if(data.rules.generation < 9) overrideMoveData(data.rules.generation);
+                if(data.rules.mods) {
+                    if(data.rules.mods.includes("flipped")) modFlipped(Object.keys(data.meta));
+                }
+            }
 
             Object.entries(data.meta).forEach((mon) => {
                 if(mon[1].abilities) overrideAbilities(toID(mon[0]), ...mon[1].abilities);
@@ -80,15 +86,20 @@
         else if(abil4 !== true) abilities["S"] = abil4;
     }
 
+    // research: effects of the values of learnset entries.
+    // "123456789pqga"
+
+    // TODO: check for existing properties of each learnset entry; try to preserve them.
     function overrideLearnset(mon, addMoves, banMoves, setMoves) {
-        const learnset = BattleTeambuilderTable.learnsets[mon] || {};
+        if(!BattleTeambuilderTable.learnsets[mon]) BattleTeambuilderTable.learnsets[mon] = {};
+        const learnset = BattleTeambuilderTable.learnsets[mon];
         if(setMoves) {
-            for(const move of learnset) delete learnset[toID(move)];
-            for(const move of setMoves) learnset[toID(move)] = "9a";
+            for(const move in learnset) delete learnset[move];
+            for(const move of setMoves) learnset[toID(move)] = "9g";
             return;
         }
         if(addMoves) {
-            for(const move of addMoves) learnset[toID(move)] = "9a";
+            for(const move of addMoves) learnset[toID(move)] = "9g";
         }
         if(banMoves) {
             for(const move of banMoves) delete learnset[toID(move)];
@@ -164,6 +175,21 @@
                 else BattleMovedex[move].category = "Physical";
             }
         }
+    }
+
+    function modFlipped(meta) {
+        meta.map((mon) => toID(mon)).forEach((mon) => {
+            let tempStat;
+            tempStat = BattlePokedex[mon].baseStats.hp;
+            BattlePokedex[mon].baseStats.hp = BattlePokedex[mon].baseStats.spe;
+            BattlePokedex[mon].baseStats.spe = tempStat;
+            tempStat = BattlePokedex[mon].baseStats.atk;
+            BattlePokedex[mon].baseStats.atk = BattlePokedex[mon].baseStats.spd;
+            BattlePokedex[mon].baseStats.spd = tempStat;
+            tempStat = BattlePokedex[mon].baseStats.def;
+            BattlePokedex[mon].baseStats.def = BattlePokedex[mon].baseStats.spa;
+            BattlePokedex[mon].baseStats.spa = tempStat;
+        });
     }
 
 })();

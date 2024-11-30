@@ -1,3 +1,5 @@
+"use strict";
+
 // Polyfill for browser compatibility
 if (typeof browser === "undefined") globalThis.browser = chrome;
 
@@ -8,14 +10,18 @@ const KEY_POWER = "power";
 
 const input_search = document.getElementById("input-search");
 const btn_chal = document.getElementById("btn-chalcode");
+const btn_help = document.getElementById("btn-help");
 const btn_pow = document.getElementById("btn-power");
 const menu_l = document.getElementById("menu-l");
+const menu_m = document.getElementById("menu-m");
 const menu_r = document.getElementById("menu-r");
+const menu_help = document.getElementById("help");
 
 const metagames_l = [];
+const metagames_m = [];
 const metagames_r = [];
 
-const semiOfficials = ["Babies", "Seniors", "Doubles", "Tours"];
+const semiOfficials = ["Babies", "Seniors", "Doubles", "Collabs"];
 
 var searching = false;
 
@@ -61,18 +67,28 @@ browser.storage.local.get({
     metagames_l.reverse();
 
     menu_l.append(...metagames_l);
+    menu_m.append(...metagames_m);
     menu_r.append(...metagames_r);
 });
 
 input_search.addEventListener("input", filterMetas);
 btn_chal.addEventListener("click", chalCode);
 btn_pow.addEventListener("click", togglePower);
+btn_help.addEventListener("click", toggleHelp);
 
 function filterMetas(search) {
     if(search.target.value) {
         searching = true;
         const filter = new RegExp(search.target.value, "i");
         menu_l.childNodes.forEach((details) => {
+            details.open = true;
+            details.childNodes.forEach((li, key) => {
+                if(key === 0) return;
+                if(filter.test(li.lastChild.innerText)) li.lastChild.style.display = "inline-block";
+                else li.lastChild.style.display = "none";
+            });
+        });
+        menu_m.childNodes.forEach((details) => {
             details.open = true;
             details.childNodes.forEach((li, key) => {
                 if(key === 0) return;
@@ -99,6 +115,14 @@ function filterMetas(search) {
                     li.lastChild.style.display = "inline-block";
                 });
             });
+            menu_m.childNodes.forEach((details) => {
+                if(stored[KEY_GROUPS].includes(details.firstChild.lastChild.innerText)) details.open = true;
+                else details.open = false;
+                details.childNodes.forEach((li, key) => {
+                    if(key === 0) return;
+                    li.lastChild.style.display = "inline-block";
+                });
+            });
             menu_r.childNodes.forEach((details) => {
                 if(stored[KEY_GROUPS].includes(details.firstChild.lastChild.innerText)) details.open = true;
                 else details.open = false;
@@ -117,14 +141,20 @@ function getColumn(group) {
     if(Number(group)) {
         return metagames_l;
     }
-    /* if(semiOfficials.includes(group)) {
-        return metagames_r; // metagames_m
-    } */
+    if(semiOfficials.includes(group)) {
+        return metagames_m;
+    }
     return metagames_r;
 }
 
 function selectMeta(e) {
     menu_l.childNodes.forEach((details) => {
+        details.childNodes.forEach((li, key) => {
+            if(key === 0) return;
+            li.lastChild.classList.remove("cur");
+        });
+    });
+    menu_m.childNodes.forEach((details) => {
         details.childNodes.forEach((li, key) => {
             if(key === 0) return;
             li.lastChild.classList.remove("cur");
@@ -151,6 +181,23 @@ function togglePower() {
     else {
         btn_pow.classList.add("active");
         browser.storage.local.set({ [KEY_POWER]: true });
+    }
+}
+
+function toggleHelp() {
+    if(btn_help.classList.contains("active")) {
+        menu_l.style.display = "block";
+        menu_m.style.display = "block";
+        menu_r.style.display = "block";
+        menu_help.style.display = "none";
+        btn_help.classList.remove("active");
+    }
+    else {
+        menu_l.style.display = "none";
+        menu_m.style.display = "none";
+        menu_r.style.display = "none";
+        menu_help.style.display = "inline-block";
+        btn_help.classList.add("active");
     }
 }
 

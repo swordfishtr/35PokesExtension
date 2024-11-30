@@ -1,3 +1,5 @@
+"use strict";
+
 // Polyfill for browser compatibility
 if (typeof browser === "undefined") globalThis.browser = chrome;
 
@@ -34,12 +36,15 @@ async function checkUpdates() {
     if(STATE_DOWNLOADING) return;
     STATE_DOWNLOADING = true;
 
+    //* COMMENT OUT FOR LOCAL TESTING
+
     const data_repo_res = await fetch("https://api.github.com/repos/swordfishtr/35PokesIndex");
     if(!data_repo_res.ok) {
         console.log("35Pokes Background: Failed to fetch repository metadata.");
         STATE_DOWNLOADING = false;
         return;
     }
+
     const data_repo = await data_repo_res.json();
 
     const stored = await browser.storage.local.get(KEY_TIMESTAMP);
@@ -54,6 +59,11 @@ async function checkUpdates() {
         STATE_DOWNLOADING = false;
         return;
     }
+
+    //*/
+
+    //const data_index_res = await fetch("./localtesting/35PokesIndex.json", { mode: "no-cors" }); // UNCOMMENT FOR LOCAL TESTING
+
     const data_index = await data_index_res.json();
 
     const metagames = await interpretIndex(data_index.tree);
@@ -62,7 +72,7 @@ async function checkUpdates() {
 
     await browser.storage.local.set({
         [KEY_METAGAMES]: metagames,
-        [KEY_TIMESTAMP]: data_repo.pushed_at
+        [KEY_TIMESTAMP]: data_repo.pushed_at // COMMENT OUT FOR LOCAL TESTING
     });
 
     STATE_DOWNLOADING = false;
@@ -90,7 +100,10 @@ async function interpretIndex(index) {
 
         if(!metagames[id[1]]) metagames[id[1]] = {};
 
-        const data_meta_res = await fetch("https://raw.githubusercontent.com/swordfishtr/35PokesIndex/main/" + meta.path);
+        const data_meta_res = await fetch("https://raw.githubusercontent.com/swordfishtr/35PokesIndex/main/" + meta.path); // COMMENT OUT FOR LOCAL TESTING
+
+        //const data_meta_res = await fetch("./localtesting/35PokesIndex/" + meta.path, { mode: "no-cors" }); // UNCOMMENT FOR LOCAL TESTING
+
         if(!data_meta_res.ok) {
             console.log("35Pokes Background: Failed to fetch " + meta.path);
             return;

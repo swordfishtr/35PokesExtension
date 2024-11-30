@@ -25,6 +25,7 @@ ul.menu-l {
     padding-left:6px;
 }
 
+ul.menu-m,
 ul.menu-r {
     float:left;
     padding-left:16px;
@@ -92,8 +93,7 @@ button.active:active {
 	margin-left: auto;
 }
 
-
-strong {
+summary > strong {
     color: #579;
 }
 
@@ -152,4 +152,14 @@ button.option.cur:hover {
 	border-color: #777777;
 	background-color: rgba(100, 100, 100, 0.5);
 	color: #FFFFFF;
+}
+
+span.help-container {
+	max-width: 600px;
+	color: #DDD;
+	display: none;
+}
+
+p.help {
+	font-size: 16px;
 }

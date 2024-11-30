@@ -29,6 +29,8 @@ This is a browser extension that modifies exposed data in the Pokemon Showdown C
 
 ## TODO
 
+Pull requests are welcome!
+
 - [ ] Support item add/ban/set in meta rules.
 
 - [ ] Modify calc data for past gen metas.
