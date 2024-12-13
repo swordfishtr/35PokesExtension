@@ -27,7 +27,7 @@ var searching = false;
 
 browser.storage.local.get({
     [KEY_METAGAMES]: {},
-    [KEY_CURRENT]: ["2024", "2024_11"],
+    [KEY_CURRENT]: ["2024", "2024_11.txt"],
     [KEY_GROUPS]: ["2024"],
     [KEY_POWER]: false
 }).then((stored) => {
