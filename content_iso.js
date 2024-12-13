@@ -20,7 +20,6 @@
             const stored = await browser.storage.local.get([KEY_METAGAMES, KEY_POWER]);
             if(stored[KEY_POWER] === false) return;
             const meta = stored[KEY_METAGAMES][changes[KEY_CURRENT].newValue[0]][changes[KEY_CURRENT].newValue[1]];
-            meta.group = changes[KEY_CURRENT].newValue[0];
             document.dispatchEvent(new CustomEvent("35Pokes", { detail: JSON.stringify(meta) }));
         }
 
@@ -29,7 +28,6 @@
             const stored = await browser.storage.local.get([KEY_CURRENT, KEY_POWER]);
             if(stored[KEY_POWER] === false) return;
             const meta = changes[KEY_METAGAMES].newValue[stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]];
-            meta.group = stored[KEY_CURRENT][0];
             document.dispatchEvent(new CustomEvent("35Pokes", { detail: JSON.stringify(meta) }));
         }
 
@@ -38,7 +36,6 @@
             if(changes[KEY_POWER].newValue === true) {
                 const stored = await browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]);
                 const meta = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]];
-                meta.group = stored[KEY_CURRENT][0];
                 document.dispatchEvent(new CustomEvent("35Pokes", { detail: JSON.stringify(meta) }));
             }
             else if(changes[KEY_POWER].newValue === false)
@@ -49,7 +46,7 @@
     browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT, KEY_POWER]).then((stored) => {
         if(stored[KEY_POWER] === true && stored[KEY_METAGAMES] && stored[KEY_CURRENT]) {
             const meta = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]];
-            meta.group = stored[KEY_CURRENT][0];
+            meta[0].group = stored[KEY_CURRENT][0];
             document.dispatchEvent(new CustomEvent("35Pokes", { detail: JSON.stringify(meta) }));
         }
         browser.runtime.sendMessage(MSG_REFRESH);

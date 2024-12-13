@@ -14,8 +14,7 @@
     }
     else console.log("35Pokes Main: Unexpected init.");
 
-    const DEFAULT_TIERS = structuredClone(BattleTeambuilderTable.gen9natdex.tierSet);
-    const DEFAULT_SLICE = BattleTeambuilderTable.gen9natdex.formatSlices.AG;
+    const DEFAULT_NDAG = structuredClone(BattleTeambuilderTable.gen9natdex);
     const DEFAULT_LEARNSETS = structuredClone(BattleTeambuilderTable.learnsets);
     const DEFAULT_POKEDEX = structuredClone(BattlePokedex);
     const DEFAULT_MOVEDEX = structuredClone(BattleMovedex);
@@ -24,13 +23,7 @@
     // Pokemon Showdown isn't a hostile website, but other extensions
     // can and do listen for messages using this method.
     document.addEventListener("35Pokes", (event) => {
-
-        let data;
-        try { data = JSON.parse(event.detail); }
-        catch {
-            console.log("35Pokes Main: Failed to parse message.");
-            return;
-        }
+        const data = JSON.parse(event.detail);
 
         if(typeof data !== "object") {
             console.log("35Pokes Main: Received unknown message.");
@@ -40,35 +33,47 @@
         restoreDefaults();
 
         // alternative: !_.isEmpty(data)
-        if(!$.isEmptyObject(data)) {
+        if($.isEmptyObject(data)) {
+            if(app.rooms.teambuilder?.curChartType) app.rooms.teambuilder.updateChart(true);
+            return;
+        }
 
-            if(data.rules) {
-                if(data.rules.generation < 9) overrideMoveData(data.rules.generation);
-                if(data.rules.mods) {
-                    if(data.rules.mods.includes("flipped")) modFlipped(Object.keys(data.meta));
-                }
+        BattleTeambuilderTable.gen9natdex.thirtyfivePokes = {};
+
+        // Global pokemon settings.
+        if(data[0].gen) overrideMoveData(data[0].gen);
+        if(data[0].mods?.includes("flipped")) modFlipped(data);
+
+        // Individual pokemon settings.
+        data.forEach((mon) => {
+            const name = toID(mon.value);
+            if(mon.abilities) overrideAbilities(name, ...mon.abilities);
+            if(mon.moves) overrideLearnset(name, mon.moves);
+
+            // Allowed pokemon and extra headers are added to the bottom of the natdex, after lc.
+            // For pokemon, using a non-lowercase name allows us to avoid displaying duplicates without modifying NDAG layout.
+            const inj = [];
+            let esc;
+            if(mon.header) {
+                esc = BattleLog.escapeHTML(mon.value);
+                inj[0] = "header";
             }
-
-            Object.entries(data.meta).forEach((mon) => {
-                if(mon[1].abilities) overrideAbilities(toID(mon[0]), ...mon[1].abilities);
-                // might turn mon.addMoves, etc. -> mon.moves {add: [], ban: [], set: []} to allow an if here
-                overrideLearnset(toID(mon[0]), mon[1].addMoves, mon[1].banMoves, mon[1].setMoves);
-            });
-
-            if(!Number(data.group)) data.name = data.group + " " + data.name;
-            overridePokemonPool(data.name, Object.keys(data.meta)); // can optionally be sorted
-
-        };
+            else {
+                esc = toID(mon.value).toUpperCase();
+                inj[0] = "pokemon";
+            }
+            BattleTeambuilderTable.gen9natdex.thirtyfivePokes[esc] = 1;
+            inj[1] = esc;
+            BattleTeambuilderTable.gen9natdex.tierSet.push(inj);
+        });
 
         // research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
-        if(app.rooms.teambuilder?.curChartType === "pokemon") app.rooms.teambuilder.updateChart(true);
+        if(app.rooms.teambuilder?.curChartType) app.rooms.teambuilder.updateChart(true);
 
     });
 
     function restoreDefaults() {
-        BattleTeambuilderTable.gen9natdex.tierSet = structuredClone(DEFAULT_TIERS);
-        BattleTeambuilderTable.gen9natdex.tiers = null;
-        BattleTeambuilderTable.gen9natdex.formatSlices.AG = DEFAULT_SLICE;
+        BattleTeambuilderTable.gen9natdex = structuredClone(DEFAULT_NDAG);
         BattleTeambuilderTable.learnsets = structuredClone(DEFAULT_LEARNSETS);
         BattlePokedex = structuredClone(DEFAULT_POKEDEX);
         BattleMovedex = structuredClone(DEFAULT_MOVEDEX);
@@ -90,32 +95,25 @@
     // "123456789pqga"
 
     // TODO: check for existing properties of each learnset entry; try to preserve them.
-    function overrideLearnset(mon, addMoves, banMoves, setMoves) {
+    function overrideLearnset(mon, moves) {
         if(!BattleTeambuilderTable.learnsets[mon]) BattleTeambuilderTable.learnsets[mon] = {};
-        const learnset = BattleTeambuilderTable.learnsets[mon];
-        if(setMoves) {
-            for(const move in learnset) delete learnset[move];
-            for(const move of setMoves) learnset[toID(move)] = "9g";
-            return;
-        }
-        if(addMoves) {
-            for(const move of addMoves) learnset[toID(move)] = "9g";
-        }
-        if(banMoves) {
-            for(const move of banMoves) delete learnset[toID(move)];
-            const prevo = BattlePokedex[mon].prevo;
-            if(prevo) overrideLearnset(toID(prevo), addMoves, banMoves, setMoves);
-        }
-    }
 
-    // Allowed mons are added to the bottom of the natdex, after lc.
-    // The original entries for these mons remain in place. The teambuilder allows duplicates.
-    // This is the least destructive approach possible.
-    function overridePokemonPool(name, meta) {
-        const TEMP_ARR = meta.map((mon) => ["pokemon", mon]);
-        TEMP_ARR.unshift(["header", "35 Pokes:&nbsp;&nbsp;&nbsp;&nbsp;" + name]);
-        BattleTeambuilderTable.gen9natdex.formatSlices.AG = BattleTeambuilderTable.gen9natdex.tierSet.length;
-        BattleTeambuilderTable.gen9natdex.tierSet.push(...TEMP_ARR);
+        const banAllRegex = /^all$/i;
+        const banAll = moves.ban.some((m) => banAllRegex.test(m));
+        if(banAll) BattleTeambuilderTable.learnsets[mon] = {};
+
+        const learnset = BattleTeambuilderTable.learnsets[mon];
+        
+        if(!banAll) for(const move of moves.ban) delete learnset[toID(move)];
+
+        for(const move of moves.add) learnset[toID(move)] = "9g";
+
+        // Evo inherits moves from prevo, so we have to delete prevo's moves too, but we don't have to add the evo's new moves.
+        const prevo = BattlePokedex[mon].prevo;
+        if(prevo) {
+            moves.add = [];
+            overrideLearnset(toID(prevo), moves);
+        }
     }
 
     // NOTE: Moves (and most other things) changed between generations are calculated backwards in Showdown.
@@ -178,7 +176,7 @@
     }
 
     function modFlipped(meta) {
-        meta.map((mon) => toID(mon)).forEach((mon) => {
+        meta.filter((mon) => !mon.header).map((mon) => toID(mon.value)).forEach((mon) => {
             let tempStat;
             tempStat = BattlePokedex[mon].baseStats.hp;
             BattlePokedex[mon].baseStats.hp = BattlePokedex[mon].baseStats.spe;

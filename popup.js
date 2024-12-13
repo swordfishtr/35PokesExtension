@@ -55,7 +55,7 @@ browser.storage.local.get({
             button.value = meta[0];
             button.classList.add("option");
             if(stored[KEY_CURRENT][0] === group && stored[KEY_CURRENT][1] === meta[0]) button.classList.add("cur");
-            button.innerText = meta[1].name;
+            button.innerText = meta[1][0].name;
             button.onclick = selectMeta;
             details.appendChild(li);
             li.appendChild(button);

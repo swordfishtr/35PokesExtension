@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "35 Pokes Extension",
     "description": "Browser extension for the 35 Pokes community",
-    "version": "0.3",
+    "version": "0.4",
     "homepage_url": "https://github.com/swordfishtr/35PokesExtension",
     "icons": {
         "48": "35_logo.PNG"
@@ -12,7 +12,8 @@
     },
     "background": {
         "service_worker": "background.js",
-        "scripts": ["background.js"]
+        "scripts": ["background.js"],
+        "type": "module"
     },
     "content_scripts": [{
         "matches": ["https://play.pokemonshowdown.com/*"],
@@ -28,7 +29,7 @@
     "permissions": ["storage"],
     "host_permissions": [
         "https://api.github.com/repos/swordfishtr/*",
-        "https://raw.githubusercontent.com/swordfishtr/*"
+        "https://codeload.github.com/swordfishtr/*"
     ],
     "minimum_chrome_version": "121",
     "browser_specific_settings": {
