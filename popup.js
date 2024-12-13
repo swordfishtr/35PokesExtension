@@ -216,10 +216,9 @@ function toggleGroup(e) {
 function chalCode() {
     browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]).then((stored) => {
         if(!stored[KEY_METAGAMES] || !stored[KEY_CURRENT]) return;
-        const prefix = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].rules?.codePrefix ||
-        '/challenge gen9nationaldexag @@@ Z-Move Clause, -Mega, Terastal Clause, Sleep Clause Mod, Forme Clause, -Hidden Power, -Last Respects, -Kings Rock, -Shadow Tag, -Acupressure, -Battle Bond, -Quick Claw, -Razor Fang, Evasion Clause, OHKO Clause, baton pass stat trap clause, -All Pokemon, +';
-        const code = prefix + Object.keys(stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].meta).join(", +");
-        copyTextToClipboard(code);
+        const prefix = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]][0].code ?? '/challenge gen9nationaldex35pokes @@@ -All Pokemon, +';
+        const mons = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].filter((mon) => !mon.header).map((mon) => mon.value).join(", +");
+        copyTextToClipboard(prefix + mons);
     });
 }
 

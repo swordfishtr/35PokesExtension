@@ -39,10 +39,16 @@ Pull requests are welcome!
 
 ## History
 
-@samuel-peter-chowdhury and @hannahfantasia are the authors of the original browser extension supporting the 35 Pokes community. It utilized a MutationObserver to detect any list of pokemon on the screen and hide all but the allowed ones, which proved very costly performance wise with up to 4 sec UI block on mobile.
+@samuel-peter-chowdhury and @hannahfantasia are the authors of the [original browser extension](https://github.com/samuel-peter-chowdhury/35PokesShowdownFilter) supporting the 35 Pokes community. It utilized a MutationObserver to detect any list of pokemon on the screen and hide all but the allowed ones, which proved very costly performance wise with up to 4 sec UI block on mobile.
 
 Later Sam devised a solution to this by editing a part of the source code of the client to suit the community's needs, and making the extension redirect the browser to this code.
 
 Sam and I then looked into various means to ease the burden on maintainers, since this edited code wouldn't update itself alongside the client source. We also wanted to be inclusive of any other browser extension utilizing the same method in the future. Technically it was possible, but the means at the time were unreliable, so we settled with the original solution.
 
-Soon after, I found that the client exposes a bunch of data, mostly under names starting with `Battle`, with write access. I was able to modify format data, learnsets, BSTs etc. using the browser console. If it's possible to fulfill the community's needs just like that, then this method is much preferable for everyone involved.
+Soon after, I found that the client exposes a bunch of data, mostly under names starting with `Battle`, with write access. I was able to modify format data, learnsets, BSTs etc. using the browser console. This method (utilized here) was much preferable for everyone involved.
+
+## Libraries used
+
+Thank you! <3
+
+- [nanotar](https://github.com/unjs/nanotar) ([license](https://opensource.org/license/mit))
