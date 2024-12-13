@@ -130,8 +130,8 @@ function checkUpdates(msg) {
 
             // This metagame's parent has not been parsed yet. Give the parent a callback to parse this metagame when that is done.
             if(!parentRef.dependants) parentRef.dependants = [];
+            console.info("35Pokes Background: Depth 3:", file.name);
             parentRef.dependants.push((ref) => {
-                console.info("35Pokes Background: Depth 3:", file.name);
                 metagames[sGroup][sName] = parseMeta(file.data, sGroup, ref);
                 if(file.dependants) file.dependants.forEach((f) => f(metagames[sGroup][sName]));
             });

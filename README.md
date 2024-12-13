@@ -6,12 +6,13 @@ This is a browser extension that modifies exposed data in the Pokemon Showdown C
 
 > [!NOTE]
 > Metagame data is maintained in a separate, dedicated repository: [35 Pokes Index](https://github.com/swordfishtr/35PokesIndex)
+> Check its branches too! When changing the format, we temporarily use the `next` branch.
 
 ## Features
 
 - Format selection much like the kind that the client provides. This is the place to generate a challenge code, or turn the extension on/off.
 
-- Turns the preferred teambuilding format, `NDAG`, into the selected 35 Pokes metagame. Every other format, like `NDOU`, is unaffected by this.
+- The selected metagame is displayed in the `gen9nationaldex35pokes` format. Every other format, like `gen9nationaldexag`, is unaffected by this.
 
 - Selecting another metagame is immediately reflected in the teambuilder.
 
