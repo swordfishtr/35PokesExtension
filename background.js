@@ -16,6 +16,11 @@ browser.runtime.onInstalled.addListener((details) => {
         // Ensure that Showdown receives a meta, even if the user hasn't set one yet.
         browser.storage.local.set({ [KEY_CURRENT]: ["2024", "2024_11.txt"] });
         checkUpdates(MSG_REFRESH);
+        return;
+    }
+    if(details.reason === "update") {
+        // Makes changing the metagame data format smoother.
+        browser.storage.local.set({ [KEY_TIMESTAMP]: 0 }).then(() => checkUpdates(MSG_REFRESH));
     }
 });
 
