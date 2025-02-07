@@ -37,8 +37,8 @@ function checkUpdates(msg) {
     STATE_DOWNLOADING = true;
 
     const REPO_INFO = "https://api.github.com/repos/swordfishtr/35PokesIndex";
-    //const REPO_TARGZ = "https://api.github.com/repos/swordfishtr/35PokesIndex/tarball/main";
-    const REPO_TARGZ = "https://api.github.com/repos/swordfishtr/35PokesIndex/tarball/next";
+    const REPO_TARGZ = "https://api.github.com/repos/swordfishtr/35PokesIndex/tarball/main";
+    //const REPO_TARGZ = "https://api.github.com/repos/swordfishtr/35PokesIndex/tarball/next";
     let timestamp;
 
     // The metagame repository will get increasingly larger as months pass and the community grows.

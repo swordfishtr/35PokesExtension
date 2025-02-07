@@ -21,7 +21,7 @@ const metagames_l = [];
 const metagames_m = [];
 const metagames_r = [];
 
-const semiOfficials = ["Babies", "Seniors", "Doubles", "Collabs"];
+const semiOfficials = ["Babies", "Seniors", "VGC", "Collabs"];
 
 var searching = false;
 
@@ -213,13 +213,23 @@ function toggleGroup(e) {
     });
 }
 
-function chalCode() {
-    browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]).then((stored) => {
+async function chalCode() {
+    /* browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]).then((stored) => {
         if(!stored[KEY_METAGAMES] || !stored[KEY_CURRENT]) return;
         const prefix = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]][0].code ?? '/challenge gen9nationaldex35pokes @@@ -All Pokemon, +';
         const mons = stored[KEY_METAGAMES][stored[KEY_CURRENT][0]][stored[KEY_CURRENT][1]].filter((mon) => !mon.header).map((mon) => mon.value).join(", +");
         copyTextToClipboard(prefix + mons);
-    });
+    }); */
+
+    const { [KEY_METAGAMES]: s, [KEY_CURRENT]: [sg, sm] } = await browser.storage.local.get([KEY_METAGAMES, KEY_CURRENT]);
+    let code = s[sg][sm][0].code;
+    if(!code) {
+        code = "/challenge gen9nationaldex35pokes @@@ -All Pokemon";
+        for(const mon of s[sg][sm].filter((mon) => !mon.header).map((mon) => mon.value)) {
+            code += `, +${mon}`;
+        }
+    }
+    copyTextToClipboard(code);
 }
 
 // Thanks Sam!

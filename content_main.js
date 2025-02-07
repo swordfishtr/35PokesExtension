@@ -189,5 +189,18 @@
             BattlePokedex[mon].baseStats.spa = tempStat;
         });
     }
+    /* note for later: flipped calc
+    Object.values(pokedex).forEach((m) => {
+        let tmp;
+        tmp = m.bs.hp;
+        m.bs.hp = m.bs.sp;
+        m.bs.sp = tmp;
+        tmp = m.bs.at;
+        m.bs.at = m.bs.sd;
+        m.bs.sd = tmp;
+        tmp = m.bs.df;
+        m.bs.df = m.bs.sa;
+        m.bs.sa = tmp;
+    }); */
 
 })();

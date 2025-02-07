@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "35 Pokes Extension",
     "description": "Browser extension for the 35 Pokes community",
-    "version": "0.5",
+    "version": "0.6",
     "homepage_url": "https://github.com/swordfishtr/35PokesExtension",
     "icons": {
         "48": "35_logo.PNG"
