@@ -198,6 +198,7 @@ function parseMeta(txt, group, parent) {
     const isRules = /^\s*rules;/i;
     const modPastGen = /;\s*generation:\s*(.+?)(?:$|[;\s])/i;
     const modFlipped = /;\s*flipped(?:$|[;\s])/i;
+    const modScalemons = /;\s*scalemons(?:$|[;\s])/i;
     const isHeader = /;\s*header\s*(?:;|$)/i;
     const isParent = /^\s*parent:/i;
     const dataValueBase = /^\s*(.*?)\s*(?:;|$)/;
@@ -229,8 +230,7 @@ function parseMeta(txt, group, parent) {
             if(gen) metagame[0].gen = gen;
 
             if(modFlipped.test(line)) metagame[0].mods.push("flipped");
-
-            // Check other rules here.
+            if(modScalemons.test(line)) metagame[0].mods.push("scalemons");
 
             continue;
         }
