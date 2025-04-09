@@ -4,6 +4,9 @@
 	if(globalThis.hasRun_35pokes_main) return;
 	globalThis.hasRun_35pokes_main = true;
 
+	const app = globalThis.app ?? globalThis.PS;
+	if(!app) throw new Error("35Pokes Main: Failed init.");
+
 	// tierSet is created from tiers - see battle-dex-search.ts 1003. Force create tierSet
 	if(BattleTeambuilderTable.gen9natdex.tiers && !BattleTeambuilderTable.gen9natdex.tierSet) {
 		const TEMP_BPS = new BattlePokemonSearch();
@@ -192,7 +195,7 @@
 			BattlePokedex[mon].baseStats.spa = tempStat;
 		});
 	}
-	/* note for later: flipped calc
+	/* flipped calc
 	Object.values(pokedex).forEach((m) => {
 		let tmp;
 		tmp = m.bs.hp;
@@ -207,7 +210,7 @@
 	}); */
 
 	function modScalemons(meta) {
-			meta.filter((mon) => !mon.header).map((mon) => toID(mon.value)).forEach((mon) => {
+		meta.filter((mon) => !mon.header).map((mon) => toID(mon.value)).forEach((mon) => {
 			const bstNoHP = BattlePokedex[mon].baseStats.atk +
 			BattlePokedex[mon].baseStats.def +
 			BattlePokedex[mon].baseStats.spa +
@@ -223,5 +226,21 @@
 			}
 		});
 	}
+	/* scalemons calc
+	Object.values(pokedex).forEach((mon) => {
+		const bstNoHP = mon.bs.at +
+		mon.bs.df +
+		mon.bs.sa +
+		mon.bs.sd +
+		mon.bs.sp;
+		const scale = 600 - mon.bs.hp;
+		for(const stat in mon.bs) {
+			if(stat === "hp") continue;
+			let newStat = Math.floor(mon.bs[stat] * scale / bstNoHP);
+			if(newStat < 1) newStat = 1;
+			else if(newStat > 255) newStat = 255;
+			mon.bs[stat] = newStat;
+		}
+	}); */
 
 })();
