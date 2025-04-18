@@ -1,54 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="popup.css" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="popup.css" />
 </head>
 <body class="dark">
-    <div>
-        <div class="popupmenu">
-            <input id="input-search" name="search" placeholder="Search formats" value="" class="textbox autofocus" autocomplete="off">
-            &nbsp;
-            <button id="btn-chalcode" class="button">Challenge Code</button>
-            &nbsp;
-            <button id="btn-help" class="button"><strong>?</strong></button>
-            &nbsp;
-            <button id="btn-power" class="button">
-                <!-- from Gnome Symbolic Icon Theme, modified -->
-                <svg width='16px' height='16px'>
-                    <g transform='translate(-100,-685.97574)'>
-                        <path d='m 104.84002,687.8125 a 0.99998337,1.0002168 0 0 0 -0.34813,0.13393 c -1.05343,0.60965 -1.93145,1.46598 -2.54405,2.51786 -1.93955,3.33036 -0.81232,7.64928 2.51727,9.58928 3.32959,1.94001 7.64749,0.8125 9.58705,-2.51786 1.93955,-3.33035 0.81232,-7.64927 -2.51727,-9.58928 a 1.0081498,1.0083851 0 1 0 -1.01762,1.74107 c 2.39572,1.39588 3.18978,4.43408 1.79422,6.83036 -1.39555,2.39628 -4.43303,3.19052 -6.82876,1.79464 -2.38544,-1.38989 -3.19179,-4.41207 -1.821,-6.80357 l 0.0268,-0.0268 c 0.43759,-0.75138 1.06851,-1.38594 1.821,-1.82142 a 0.99998337,1.0002168 0 0 0 -0.66949,-1.84822 z' id='path3869-2' style='color:#000000;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:2.333606;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;'/>
-                        <path d='M 107.78125,686 A 1.0001,1.0001 0 0 0 107,687 l 0,5 a 1.0001,1.0001 0 1 0 2,0 l 0,-5 a 1.0001,1.0001 0 0 0 -1.21875,-1 z' id='path4710' style='color:#000000;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;'/>
-                    </g>
-                </svg>
-            </button>
-        </div>
-        <span name="formats">
-            <ul id="menu-l" class="menu-l"></ul>
-            <ul id="menu-m" class="menu-m"></ul>
-            <ul id="menu-r" class="menu-r"></ul>
-            <span id="help" class="help-container">
-                <h1>Notes for why the extension might be misbehaving or not working</h1>
-                <p class="help">
-                    - The extension is inactive on installation. Check the power button at the top right corner; its color is blue when active.
-                </p>
-                <p class="help">
-                    - The extension needs to download metagame data from GitHub at least once; it can't work otherwise.
-                </p>
-                <p class="help">
-                    - Only the National Dex 35 Pokes format will display the selected meta. Other formats like NDAG retain their lists of pokemon.
-                </p>
-                <p class="help">
-                    - Certain extended metas modify global data like pokemon stats and move base power for convenience. This <strong>will</strong> carry over to other formats and in-battle tooltips. Select one of the main metas or turn the extension off to fix.
-                </p>
-                <h1>Misc info</h1>
-                <p class="help">
-                    <a href="https://github.com/swordfishtr/35PokesExtension">Check out the open source code of this extension!</a>
-                </p>
-            </span>
-        </span>
-    </div>
-    <script src="popup.js"></script>
+	<div>
+		<div class="popupmenu">
+			<input
+			id="input-search"
+			name="search"
+			placeholder="Search formats"
+			value=""
+			title="Search formats by name"
+			class="textbox autofocus"
+			autocomplete="off">
+			&nbsp;
+
+			<button
+			id="btn-chalcode"
+			title="Copy the challenge code for the selected format to clipboard"
+			class="button">
+				Challenge Code
+			</button>
+			&nbsp;
+
+			<button
+			id="btn-news"
+			title="View the latest news message"
+			class="button">
+				<!-- from Gnome Symbolic Icon Theme, modified -->
+				<svg width='16px' height='16px'>
+					<g transform='translate(-40.99995,-297)'>
+						<path
+						d='m 43.78125,301 a 1.0000999,1.0000999 0 0 0 -0.40625,1.78125 l 5,4 0.625,0.5 0.625,-0.5 5,-4 a 1.0004882,1.0004882 0 1 0 -1.25,-1.5625 l -4.375,3.5 -4.375,-3.5 A 1.0000999,1.0000999 0 0 0 43.78125,301 z'
+						style='fill:#f9f9f9;fill-opacity:1;'/>
+						<path
+						d='M 42.90625,300 A 1.0001,1.0001 0 0 0 42,301 l 0,9 a 1.0001,1.0001 0 0 0 1,1 l 12,0 a 1.0001,1.0001 0 0 0 1,-1 l 0,-9 a 1.0001,1.0001 0 0 0 -1,-1 l -12,0 a 1.0001,1.0001 0 0 0 -0.09375,0 z M 44,302 l 10,0 0,7 -10,0 0,-7 z'
+						style='fill:#f9f9f9;fill-opacity:1;'/>
+					</g>
+				</svg>
+			</button>
+			&nbsp;
+
+			<button
+			id="btn-help"
+			title="View frequently asked questions"
+			class="button">
+				<strong>
+					?
+				</strong>
+			</button>
+			&nbsp;
+
+			<button
+			id="btn-power"
+			title="Toggle the extension on and off"
+			class="button">
+				<!-- from Gnome Symbolic Icon Theme, modified -->
+				<svg width='16px' height='16px'>
+					<g transform='translate(-100,-685.97574)'>
+						<path
+						d='m 104.84002,687.8125 a 0.99998337,1.0002168 0 0 0 -0.34813,0.13393 c -1.05343,0.60965 -1.93145,1.46598 -2.54405,2.51786 -1.93955,3.33036 -0.81232,7.64928 2.51727,9.58928 3.32959,1.94001 7.64749,0.8125 9.58705,-2.51786 1.93955,-3.33035 0.81232,-7.64927 -2.51727,-9.58928 a 1.0081498,1.0083851 0 1 0 -1.01762,1.74107 c 2.39572,1.39588 3.18978,4.43408 1.79422,6.83036 -1.39555,2.39628 -4.43303,3.19052 -6.82876,1.79464 -2.38544,-1.38989 -3.19179,-4.41207 -1.821,-6.80357 l 0.0268,-0.0268 c 0.43759,-0.75138 1.06851,-1.38594 1.821,-1.82142 a 0.99998337,1.0002168 0 0 0 -0.66949,-1.84822 z'
+						style='fill:#f9f9f9;fill-opacity:1;'/>
+						<path
+						d='M 107.78125,686 A 1.0001,1.0001 0 0 0 107,687 l 0,5 a 1.0001,1.0001 0 1 0 2,0 l 0,-5 a 1.0001,1.0001 0 0 0 -1.21875,-1 z'
+						style='fill:#f9f9f9;fill-opacity:1;'/>
+					</g>
+				</svg>
+			</button>
+		</div>
+		<span name="formats">
+			<ul id="menu-l" class="menu-l"></ul>
+			<ul id="menu-m" class="menu-m"></ul>
+			<ul id="menu-r" class="menu-r"></ul>
+			<span id="news" class="news-container">
+				<h1 id="news-title"></h1>
+				<p id="news-content" class="help"></p>
+				<p class="news-author"><i id="news-author"></i></p>
+			</span>
+			<span id="help" class="help-container">
+				<h1>Notes for why the extension might be misbehaving or not working</h1>
+				<p class="help">
+					- The extension is inactive on installation. Check the power button at the top right corner; its color is blue when active.
+				</p>
+				<p class="help">
+					- The extension needs to download metagame data from GitHub at least once; it can't work otherwise.
+				</p>
+				<p class="help">
+					- Only the National Dex 35 Pokes format will display the selected meta. Other formats like NDAG retain their lists of pokemon.
+				</p>
+				<p class="help">
+					- Certain extended metas modify global data like pokemon stats and move base power for convenience. This <strong>will</strong> carry over to other formats and in-battle tooltips. Select one of the main metas or turn the extension off to fix.
+				</p>
+				<h1>Misc info</h1>
+				<p class="help">
+					<a href="https://github.com/swordfishtr/35PokesExtension">Check out the open source code of this extension!</a>
+				</p>
+			</span>
+		</span>
+	</div>
+	<script type="module" src="popup.js"></script>
 </body>
 </html>

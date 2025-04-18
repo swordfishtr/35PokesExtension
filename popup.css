@@ -1,8 +1,8 @@
 html {
-    padding: 0;
-    margin: 0;
-    background-color: #0D151E;
-    width: max-content;
+	padding: 0;
+	margin: 0;
+	background-color: #0D151E;
+	width: max-content;
 	height: max-content;
 	overflow: auto;
 	scrollbar-gutter: stable;
@@ -10,43 +10,43 @@ html {
 }
 
 ul {
-    list-style: none;
-    margin: 0;
+	list-style: none;
+	margin: 0;
 }
 
 div.popupmenu {
-    display: flex;
-    padding: 0;
-    margin-bottom: 12px;
+	display: flex;
+	padding: 0;
+	margin-bottom: 12px;
 }
 
 ul.menu-l {
-    float:left;
-    padding-left:6px;
+	float:left;
+	padding-left:6px;
 }
 
 ul.menu-m,
 ul.menu-r {
-    float:left;
-    padding-left:16px;
+	float:left;
+	padding-left:16px;
 }
 
 details {
-    margin-bottom: 16px;
+	margin-bottom: 16px;
 	
 }
 
 summary {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 button {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 button.button {
-    padding: 3px 8px;
-    font-size: 9pt;
+	padding: 3px 8px;
+	font-size: 9pt;
 }
 
 button.button {
@@ -69,18 +69,33 @@ button.button:active {
 	box-shadow: 0.5px 1px 2px rgba(255, 255, 255, 0.45);
 }
 
+button.attention {
+	/* background: #e0cd65; */
+	background: #D1BA3D;
+	background: linear-gradient(to bottom, #E6CC43, #877828);
+	border-color: #ebd76a;
+}
+button.attention:hover {
+	background: #FADE48;
+	background: linear-gradient(to bottom, #FADE48, #A6952E);
+	border-color: #ebd76a;
+}
+button.attention:active {
+	background: #A39130;
+	background: linear-gradient(to bottom, #6E6120, #A39130);
+	border-color: #ebd76a;
+}
+
 button.active {
 	background: #0b1750;
 	background: linear-gradient(to bottom, #153f93, #0b1750);
 	border-color: #0e3262;
 }
-
 button.active:hover {
 	background: #112b74;
 	background: linear-gradient(to bottom, #1b3fc0, #112b74);
 	border-color: #165098;
 }
-
 button.active:active {
 	background: #0b1750;
 	background: linear-gradient(to bottom, #0b1750, #153f93);
@@ -88,21 +103,21 @@ button.active:active {
 }
 
 #btn-power {
-    display: flex;
-    padding: 4px;
+	display: flex;
+	padding: 4px;
 	margin-left: auto;
 }
 
 summary > strong {
-    color: #579;
+	color: #579;
 }
 
 input.textbox {
-    width: 100px;
-    border: 1px solid #AAAAAA;
-    border-radius: 3px;
-    padding: 2px 3px;
-    font-size: 9pt;
+	width: 100px;
+	border: 1px solid #AAAAAA;
+	border-radius: 3px;
+	padding: 2px 3px;
+	font-size: 9pt;
 }
 
 input.textbox {
@@ -129,7 +144,7 @@ input.textbox:focus {
 }
 
 button.option {
-    width: 100%;
+	width: 100%;
 	background-color: transparent;
 	border: 1px solid transparent;
 	border-radius: 4px;
@@ -154,6 +169,7 @@ button.option.cur:hover {
 	color: #FFFFFF;
 }
 
+span.news-container,
 span.help-container {
 	max-width: 600px;
 	color: #DDD;
@@ -162,4 +178,9 @@ span.help-container {
 
 p.help {
 	font-size: 16px;
+}
+
+p.news-author {
+	text-align: right;
+	font-size: 18px
 }
