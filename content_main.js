@@ -41,37 +41,44 @@
 			return;
 		}
 
-		BattleTeambuilderTable.gen9natdex.thirtyfivePokes = {};
+		let edit35Pokes = true;
 
 		// Global pokemon settings.
 		if(data[0].gen) overrideMoveData(data[0].gen);
 		if(Array.isArray(data[0].mods)) {
 			if(data[0].mods.includes("flipped")) modFlipped(data);
 			if(data[0].mods.includes("scalemons")) modScalemons(data);
+			if(data[0].mods.includes("moves")) {
+				edit35Pokes = false;
+				modMoves(data);
+			}
 		}
 
 		// Individual pokemon settings.
-		data.forEach((mon) => {
-			const name = toID(mon.value);
-			if(mon.abilities) overrideAbilities(name, ...mon.abilities);
-			if(mon.moves) overrideLearnset(name, mon.moves);
+		if(edit35Pokes) {
+			BattleTeambuilderTable.gen9natdex.thirtyfivePokes = {};
+			for(const mon of data) {
+				const name = toID(mon.value);
+				if(mon.abilities) overrideAbilities(name, ...mon.abilities);
+				if(mon.moves) overrideLearnset(name, mon.moves);
 
-			// Allowed pokemon and extra headers are added to the bottom of the natdex, after lc.
-			// For pokemon, using a non-lowercase name allows us to avoid displaying duplicates without modifying NDAG layout.
-			const inj = [];
-			let esc;
-			if(mon.header) {
-				esc = BattleLog.escapeHTML(mon.value);
-				inj[0] = "header";
+				// Allowed pokemon and extra headers are added to the bottom of the natdex, after lc.
+				// For pokemon, using a non-lowercase name allows us to avoid displaying duplicates without modifying NDAG layout.
+				const inj = [];
+				let esc;
+				if(mon.header) {
+					esc = BattleLog.escapeHTML(mon.value);
+					inj[0] = "header";
+				}
+				else {
+					esc = toID(mon.value).toUpperCase();
+					inj[0] = "pokemon";
+				}
+				BattleTeambuilderTable.gen9natdex.thirtyfivePokes[esc] = 1;
+				inj[1] = esc;
+				BattleTeambuilderTable.gen9natdex.tierSet.push(inj);
 			}
-			else {
-				esc = toID(mon.value).toUpperCase();
-				inj[0] = "pokemon";
-			}
-			BattleTeambuilderTable.gen9natdex.thirtyfivePokes[esc] = 1;
-			inj[1] = esc;
-			BattleTeambuilderTable.gen9natdex.tierSet.push(inj);
-		});
+		}
 
 		// research: TeambuilderRoom.prototype.updateChart accepts a 2nd parameter that seems to have no effect.
 		if(app.rooms.teambuilder?.curChartType) app.rooms.teambuilder.updateChart(true);
@@ -242,5 +249,16 @@
 			mon.bs[stat] = newStat;
 		}
 	}); */
+
+	function modMoves(meta) {
+		const moves = meta.map((move) => toID(move.value));
+		for(const mon in BattleTeambuilderTable.learnsets) {
+			for(const move in BattleTeambuilderTable.learnsets[mon]) {
+				if(!moves.includes(move)) {
+					delete BattleTeambuilderTable.learnsets[mon][move];
+				}
+			}
+		}
+	}
 
 })();
