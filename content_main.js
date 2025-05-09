@@ -258,6 +258,13 @@
 					delete BattleTeambuilderTable.learnsets[mon][move];
 				}
 			}
+			const moveNum = Object.keys(BattleTeambuilderTable.learnsets[mon]).length;
+			BattleTeambuilderTable.gen9natdex.overrideTier[mon] = `${moveNum}`;
+			if(BattlePokedex[mon]?.otherFormes) {
+				for(const forme of BattlePokedex[mon].otherFormes.map(toID)) {
+					BattleTeambuilderTable.gen9natdex.overrideTier[forme] = `${moveNum}`;
+				}
+			}
 		}
 	}
 
