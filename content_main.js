@@ -44,7 +44,8 @@
 		let edit35Pokes = true;
 
 		// Global pokemon settings.
-		if(data[0].gen) overrideMoveData(data[0].gen);
+		if(data[0].generation) downgradeMoveData(Number(data[0].generation));
+		else if(data[0].oldgen) downgradeLearnsets(Number(data[0].oldgen));
 		if(Array.isArray(data[0].mods)) {
 			if(data[0].mods.includes("flipped")) modFlipped(data);
 			if(data[0].mods.includes("scalemons")) modScalemons(data);
@@ -104,9 +105,6 @@
 		else if(abil4 !== true) abilities["S"] = abil4;
 	}
 
-	// research: effects of the values of learnset entries.
-	// "123456789pqga"
-
 	// TODO: check for existing properties of each learnset entry; try to preserve them.
 	function overrideLearnset(mon, moves) {
 		if(!BattleTeambuilderTable.learnsets[mon]) BattleTeambuilderTable.learnsets[mon] = {};
@@ -119,7 +117,7 @@
 		
 		if(!banAll) for(const move of moves.ban) delete learnset[toID(move)];
 
-		for(const move of moves.add) learnset[toID(move)] = "9g";
+		for(const move of moves.add) learnset[toID(move)] = "9a";
 
 		// Evo inherits moves from prevo, so we have to delete prevo's moves too, but we don't have to add the evo's new moves.
 		const prevo = BattlePokedex[mon].prevo;
@@ -131,7 +129,7 @@
 
 	// NOTE: Moves (and most other things) changed between generations are calculated backwards in Showdown.
 	// target: number (target generation to mimic)
-	function overrideMoveData(target) {
+	function downgradeMoveData(target) {
 		const gens = [];
 		const filter = /^gen(\d+)$/;
 		const markedMoves = new Set();
@@ -184,6 +182,28 @@
 
 				if(oldgenSpecialMoves.has(BattleMovedex[move].type)) BattleMovedex[move].category = "Special";
 				else BattleMovedex[move].category = "Physical";
+			}
+		}
+	}
+
+	// NOTE: HM moves aren't transferrable.
+	// target: number (target generation to mimic)
+	function downgradeLearnsets(target) {
+		downgradeMoveData(target);
+		const curGen = 9;
+		const laterGens = [];
+		for(let i = target + 1; i <= curGen; i++) {
+			laterGens.push(`${i}`);
+		}
+		console.log(laterGens);
+		for(const mon in BattleTeambuilderTable.learnsets) {
+			for(const move in BattleTeambuilderTable.learnsets[mon]) {
+				if(
+					!BattleTeambuilderTable.learnsets[mon][move].includes(`${target}`) &&
+					laterGens.some((x) => BattleTeambuilderTable.learnsets[mon][move].includes(x))
+				) {
+					delete BattleTeambuilderTable.learnsets[mon][move];
+				}
 			}
 		}
 	}
